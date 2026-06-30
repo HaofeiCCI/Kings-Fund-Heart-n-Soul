@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Medicines</title>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
     :root {
       --pink: #FFC6C6; --pink-dark: #e89f9f;
@@ -328,7 +329,7 @@
 
     <!-- ── Photo ── -->
     <div id="method-photo" style="display:none">
-      <p style="margin-bottom:.9rem;color:#555">Take a photo of your prescription or choose one from your gallery.</p>
+      <p style="margin-bottom:.9rem;color:#555">Take a photo of your prescription or medicine box. We will read the details automatically — you can check and change anything before saving.</p>
       <div class="photo-btns">
         <button class="pbtn" onclick="document.getElementById('camIn').click()"><span class="pbi">📷</span>Take a photo</button>
         <button class="pbtn" onclick="document.getElementById('galIn').click()"><span class="pbi">🖼️</span>From gallery</button>
@@ -336,15 +337,65 @@
       <input type="file" id="camIn" accept="image/*" capture="environment" onchange="handlePhoto(event)" style="display:none">
       <input type="file" id="galIn" accept="image/*" onchange="handlePhoto(event)" style="display:none">
       <img id="photoPreview" alt="Your prescription" style="display:none;max-width:100%;border-radius:12px;margin-top:.9rem">
+
       <div id="photoResult" style="display:none;margin-top:.9rem">
-        <div class="spell-warn on" style="margin-bottom:.7rem"><span>👆</span><span>Please <strong>check each name and dose carefully</strong> before saving.</span></div>
-        <label for="pN">💊 Medicine name (from photo)</label>
-        <input type="text" id="pN" oninput="chkSpell('pN','wpN','spN',false)">
-        <div class="spell-warn" id="wpN"><span>⚠️</span><span>Did you mean: <strong id="spN"></strong>?</span></div>
-        <label for="pD">💉 Dose</label>
-        <input type="text" id="pD" oninput="chkSpell('pD','wpD','spD',true)">
-        <div class="spell-warn" id="wpD"><span>⚠️</span><span>Did you mean: <strong id="spD"></strong>?</span></div>
-        <button class="btn" onclick="addPhoto()">➕ Add this medicine</button>
+
+        <!-- Loading -->
+        <div id="photoLoading" style="display:none;text-align:center;padding:1.5rem;background:#f0f8ff;border-radius:14px;margin-bottom:.9rem">
+          <div style="font-size:2.2rem;margin-bottom:.4rem">🔍</div>
+          <div style="font-weight:700;font-size:1rem;margin-bottom:.3rem">Reading your prescription…</div>
+          <div id="ocrProgress" style="color:var(--blue-dark);font-size:.88rem">Starting…</div>
+        </div>
+
+        <!-- OCR error -->
+        <div id="ocrError" style="display:none" class="spell-warn on">
+          <span>⚠️</span><span>We could not read the photo automatically. Please type the details below.</span>
+        </div>
+
+        <!-- Editable recognised fields -->
+        <div id="photoFields" style="display:none">
+          <div class="spell-warn on" style="margin-bottom:.8rem">
+            <span>✏️</span>
+            <span>We have filled in what we found. Please <strong>check every field</strong> and correct anything that looks wrong before saving.</span>
+          </div>
+
+          <label for="pN">💊 Medicine name</label>
+          <input type="text" id="pN" placeholder="e.g. Metformin" oninput="chkSpell('pN','wpN','spN',false)" autocomplete="off">
+          <div class="spell-warn" id="wpN"><span>⚠️</span><span>Did you mean: <strong id="spN"></strong>? Please double-check.</span></div>
+
+          <label for="pD">💉 Dose</label>
+          <input type="text" id="pD" placeholder="e.g. 500mg" oninput="chkSpell('pD','wpD','spD',true)">
+          <div class="spell-warn" id="wpD"><span>⚠️</span><span>Did you mean: <strong id="spD"></strong>? Please double-check this dose.</span></div>
+
+          <label for="pF">🕐 How often?</label>
+          <select id="pF">
+            <option value="">-- Choose --</option>
+            <option value="once">Once a day</option>
+            <option value="twice">Twice a day</option>
+            <option value="three">Three times a day</option>
+            <option value="four">Four times a day</option>
+            <option value="weekly">Once a week</option>
+            <option value="asneeded">Only when needed</option>
+          </select>
+
+          <label>🍽️ Take with food?</label>
+          <div class="meal-pills" id="mealPillsPhoto">
+            <div class="mpill" data-v="before" onclick="toggleMpill(this)"><span class="pi">🌅</span>Before meal</div>
+            <div class="mpill" data-v="with"   onclick="toggleMpill(this)"><span class="pi">🍽️</span>With meal</div>
+            <div class="mpill" data-v="after"  onclick="toggleMpill(this)"><span class="pi">🌇</span>After meal</div>
+            <div class="mpill" data-v="any"    onclick="toggleMpill(this)"><span class="pi">🤷</span>Doesn't matter</div>
+          </div>
+
+          <label for="pNotes">📝 Extra notes (optional)</label>
+          <textarea id="pNotes" rows="2" placeholder="e.g. Take with a full glass of water"></textarea>
+
+          <details style="margin-top:.8rem">
+            <summary style="cursor:pointer;color:var(--blue-dark);font-size:.87rem;font-weight:600">📄 See raw text read from your photo</summary>
+            <div id="ocrRaw" style="background:#f5f5f5;border-radius:10px;padding:.7rem;margin-top:.45rem;font-size:.78rem;color:#666;white-space:pre-wrap;max-height:140px;overflow-y:auto;line-height:1.4"></div>
+          </details>
+
+          <button class="btn" onclick="addPhoto()">➕ Add this medicine</button>
+        </div>
       </div>
     </div>
 
@@ -662,27 +713,112 @@ function addManual(){
   ['wN','wD'].forEach(id=>document.getElementById(id).classList.remove('on'));
 }
 
-/* ═══ Photo ═══ */
-function handlePhoto(e){
+/* ═══ Photo + OCR ═══ */
+async function handlePhoto(e){
   const file=e.target.files[0];if(!file)return;
+  e.target.value='';
   const reader=new FileReader();
-  reader.onload=ev=>{
+  reader.onload=async ev=>{
     const img=document.getElementById('photoPreview');
-    img.src=ev.target.result;img.style.display='block';
+    img.src=ev.target.result;
+    img.style.display='block';
+
+    // Reset all fields and show loading
+    ['pN','pD','pNotes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pF').value='';
+    document.querySelectorAll('#mealPillsPhoto .mpill').forEach(p=>p.classList.remove('on'));
+    ['wpN','wpD'].forEach(id=>document.getElementById(id).classList.remove('on'));
+    document.getElementById('ocrRaw').textContent='';
     document.getElementById('photoResult').style.display='block';
-    document.getElementById('pN').value='';
-    document.getElementById('pD').value='';
+    document.getElementById('photoLoading').style.display='block';
+    document.getElementById('photoFields').style.display='none';
+    document.getElementById('ocrError').style.display='none';
+
+    try {
+      const result=await Tesseract.recognize(ev.target.result,'eng',{
+        logger:m=>{
+          if(m.status==='recognizing text'){
+            document.getElementById('ocrProgress').textContent=
+              `Reading… ${Math.round(m.progress*100)}%`;
+          }
+        }
+      });
+      const text=result.data.text||'';
+      document.getElementById('ocrRaw').textContent=text.trim()||'(nothing readable found)';
+
+      const parsed=parseOcrText(text);
+      if(parsed.name) document.getElementById('pN').value=parsed.name;
+      if(parsed.dose) document.getElementById('pD').value=parsed.dose;
+      if(parsed.freq) document.getElementById('pF').value=parsed.freq;
+      if(parsed.meal){
+        const pill=document.querySelector(`#mealPillsPhoto .mpill[data-v="${parsed.meal}"]`);
+        if(pill) pill.classList.add('on');
+      }
+      // Spell-check auto-filled values
+      if(parsed.name) chkSpell('pN','wpN','spN',false);
+      if(parsed.dose) chkSpell('pD','wpD','spD',true);
+
+    } catch(err){
+      document.getElementById('ocrError').style.display='flex';
+    }
+
+    document.getElementById('photoLoading').style.display='none';
+    document.getElementById('photoFields').style.display='block';
   };
   reader.readAsDataURL(file);
-  e.target.value='';
 }
+
+function parseOcrText(text){
+  const res={};
+
+  // Dose: number + unit (e.g. 500mg, 5 ml, 1.25mg)
+  const doseM=text.match(/(\d+\.?\d*)\s*(mg|ml|g\b|mcg|iu|units?)/i);
+  if(doseM) res.dose=(doseM[1]+doseM[2]).toLowerCase();
+
+  // Frequency — prescription abbreviations and plain English
+  const freqRules=[
+    {r:/\b(q\.?d\.?s\.?|qds|four\s*times|4\s*times|4x)\b/i,       v:'four'},
+    {r:/\b(t\.?d\.?s\.?|tds|tid|three\s*times|3\s*times|3x)\b/i,  v:'three'},
+    {r:/\b(b\.?d\.?|bid|twice|two\s*times|2\s*times|2x)\b/i,       v:'twice'},
+    {r:/\b(o\.?d\.?|qd|once\s*daily|once\s*a\s*day|1\s*time|daily|every\s*day)\b/i, v:'once'},
+    {r:/\b(p\.?r\.?n\.?|prn|as\s*needed|when\s*required|if\s*needed)\b/i, v:'asneeded'},
+    {r:/\bweekly\b/i,                                                v:'weekly'},
+  ];
+  for(const{r,v}of freqRules){if(r.test(text)){res.freq=v;break;}}
+
+  // Meal instructions
+  if(/before\s*(meal|food|eating)/i.test(text))          res.meal='before';
+  else if(/after\s*(meal|food|eating)/i.test(text))      res.meal='after';
+  else if(/(with|during)\s*(meal|food|eating)|with food/i.test(text)) res.meal='with';
+
+  // Medicine name — match each word against known list, fuzzy if needed
+  for(const w of text.split(/[\s\n,;:()/]+/)){
+    const clean=w.replace(/[^a-zA-Z]/g,'').toLowerCase();
+    if(clean.length<3) continue;
+    if(knownMeds.includes(clean)){
+      res.name=clean[0].toUpperCase()+clean.slice(1);break;
+    }
+    const bm=bestMatch(clean,knownMeds);
+    if(bm){res.name=bm[0].toUpperCase()+bm.slice(1);break;}
+  }
+  return res;
+}
+
 function addPhoto(){
   const n=document.getElementById('pN').value.trim();
   const d=document.getElementById('pD').value.trim();
   if(!n||!d){alert('Please fill in the medicine name and dose.');return;}
-  pushMed({name:n,dose:d,freq:'once',meals:[],notes:'Added from photo',source:'photo'});
+  const freq=document.getElementById('pF').value||'once';
+  const meals=[...document.querySelectorAll('#mealPillsPhoto .mpill.on')].map(p=>p.dataset.v);
+  const notes=document.getElementById('pNotes').value.trim();
+  pushMed({name:n,dose:d,freq,meals,notes,source:'photo'});
+  // Reset UI
   document.getElementById('photoResult').style.display='none';
   document.getElementById('photoPreview').style.display='none';
+  document.getElementById('photoFields').style.display='none';
+  document.getElementById('photoLoading').style.display='none';
+  document.getElementById('ocrError').style.display='none';
+  document.querySelectorAll('#mealPillsPhoto .mpill').forEach(p=>p.classList.remove('on'));
 }
 
 /* ═══ Barcode ═══ */
