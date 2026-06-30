@@ -190,10 +190,58 @@
     .page.active { display:block; }
     *:focus-visible { outline:3px solid #7ab3f0; outline-offset:2px; }
 
+    /* ── My Plan page ── */
+    .plan-tog { display:flex; background:#f0f0f0; border-radius:12px; padding:4px; margin-bottom:1.1rem; }
+    .plan-btn { flex:1; padding:.5rem; border:none; border-radius:10px; font-weight:700; font-size:.9rem; cursor:pointer; background:transparent; color:#888; transition:all .2s; }
+    .plan-btn.active { background:#fff; color:var(--text); box-shadow:0 2px 8px rgba(0,0,0,.1); }
+
+    /* Legend */
+    .legend { display:flex; flex-wrap:wrap; gap:.55rem; margin-bottom:1.1rem; }
+    .legend-item { display:flex; align-items:center; gap:.4rem; font-size:.84rem; font-weight:600; background:#f5f5ff; border-radius:20px; padding:.3rem .7rem; }
+    .legend-dot { width:13px; height:13px; border-radius:50%; flex-shrink:0; }
+
+    /* Day view */
+    .day-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+    .day-nav button { background:var(--pink); border:none; border-radius:10px; padding:.45rem .85rem; font-size:.95rem; cursor:pointer; font-weight:700; }
+    .day-label { text-align:center; }
+    .day-label strong { display:block; font-size:1.05rem; color:#333; }
+    .day-label small { font-size:.8rem; color:#999; }
+
+    .period-block { margin-bottom:1.2rem; }
+    .period-header { display:flex; align-items:center; gap:.5rem; font-size:1rem; font-weight:800; color:#555; margin-bottom:.6rem; padding-bottom:.35rem; border-bottom:2px solid #eee; }
+
+    .day-entry { display:flex; align-items:flex-start; gap:.9rem; padding:.7rem .9rem; border-radius:12px; margin-bottom:.45rem; border-left:5px solid #ccc; }
+    .day-time { font-size:1.05rem; font-weight:900; min-width:50px; color:#333; line-height:1.2; }
+    .day-time small { display:block; font-size:.64rem; font-weight:600; color:#999; }
+    .day-med-name { font-weight:800; font-size:.97rem; }
+    .day-med-detail { font-size:.83rem; color:#555; margin-top:2px; }
+    .day-badge { display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:4px; vertical-align:middle; flex-shrink:0; }
+
+    /* Weekly plan */
+    .week-plan-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:.9rem; }
+    .week-plan-nav button { background:var(--pink); border:none; border-radius:10px; padding:.45rem .85rem; font-size:.95rem; cursor:pointer; font-weight:700; }
+    .week-plan-nav h3 { font-size:.93rem; color:#555; }
+
+    .week-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:.35rem; }
+    .wday { background:#f8f8ff; border-radius:10px; padding:.4rem .25rem; min-height:110px; border:2px solid #e0d0f0; }
+    .wday.today { border-color:var(--pink-dark); background:#fff8f8; }
+    .wday-lbl { font-size:.63rem; font-weight:700; text-align:center; color:#888; }
+    .wday-num { font-size:.93rem; font-weight:800; text-align:center; margin-bottom:.35rem; }
+    .wday.today .wday-num { color:var(--pink-dark); }
+    .wchip { border-radius:5px; padding:2px 4px; font-size:.59rem; font-weight:700; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer; color:#333; }
+    .asneeded-week { margin-top:.9rem; }
+    .asneeded-week h4 { font-size:.88rem; color:#555; margin-bottom:.4rem; }
+    .asneeded-row { display:flex; align-items:center; gap:.5rem; background:#f5f5ff; border-radius:10px; padding:.6rem .8rem; margin-bottom:.4rem; border-left:4px solid #aaa; font-size:.88rem; }
+
+    /* Empty state */
+    .empty-plan { text-align:center; padding:2.5rem 1rem; color:#aaa; }
+    .empty-plan .ep-icon { font-size:3rem; display:block; margin-bottom:.6rem; }
+
     @media(max-width:480px){
       .card{padding:1rem;} .method-tabs{grid-template-columns:repeat(2,1fr);}
-      .step-btn{min-width:66px;padding:.45rem .55rem;font-size:.74rem;}
+      .step-btn{min-width:60px;padding:.4rem .45rem;font-size:.72rem;}
       .cal-chip{font-size:.55rem;} .photo-btns{grid-template-columns:1fr 1fr;}
+      .wchip{font-size:.53rem;} .week-grid{gap:.25rem;}
     }
   </style>
 </head>
@@ -216,6 +264,7 @@
   <button class="step-btn active" onclick="goTo(0)" id="step0"><span class="si">💊</span>Add Medicine</button>
   <button class="step-btn" onclick="goTo(1)" id="step1"><span class="si">📅</span>Schedule</button>
   <button class="step-btn" onclick="goTo(2)" id="step2"><span class="si">🔔</span>Reminders</button>
+  <button class="step-btn" onclick="goTo(3)" id="step3"><span class="si">📊</span>My Plan</button>
 </div>
 <div class="prog-bar"><div class="prog-fill" id="pf" style="width:33%"></div></div>
 
@@ -446,7 +495,53 @@
       <div class="big">🎉</div>
       <h3>You're all set!</h3>
       <p>Your medicines and reminders have been saved.<br>We will remind you when it is time to take them.</p>
-      <button class="btn ok" style="margin-top:.9rem" onclick="startAgain()">➕ Add another medicine</button>
+      <div class="btn-row" style="justify-content:center;margin-top:.9rem">
+        <button class="btn ok" onclick="goTo(3)">📊 View my full plan</button>
+        <button class="btn sec" onclick="startAgain()">➕ Add another medicine</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE 3: My Plan ═══════════ -->
+<div class="page" id="page3">
+  <div class="card">
+    <h2>📊 My Medicine Plan</h2>
+    <p class="subtitle">All your medicines at a glance — daily and weekly</p>
+
+    <!-- Colour legend -->
+    <div class="legend" id="planLegend"></div>
+
+    <!-- Day / Week toggle -->
+    <div class="plan-tog">
+      <button class="plan-btn active" id="pDayBtn" onclick="setPlanView('day')">📅 Today's plan</button>
+      <button class="plan-btn" id="pWeekBtn" onclick="setPlanView('week')">📆 Weekly plan</button>
+    </div>
+
+    <!-- ── Daily view ── -->
+    <div id="planDayView">
+      <div class="day-nav">
+        <button onclick="moveDay(-1)">◀ Prev</button>
+        <div class="day-label" id="dayLabel"></div>
+        <button onclick="moveDay(1)">Next ▶</button>
+      </div>
+      <div id="dayContent"></div>
+    </div>
+
+    <!-- ── Weekly view ── -->
+    <div id="planWeekView" style="display:none">
+      <div class="week-plan-nav">
+        <button onclick="movePlanWeek(-1)">◀</button>
+        <h3 id="weekPlanLabel"></h3>
+        <button onclick="movePlanWeek(1)">▶</button>
+      </div>
+      <div class="week-grid" id="weekPlanGrid"></div>
+      <div class="asneeded-week" id="asneededWeek"></div>
+    </div>
+
+    <div class="btn-row" style="margin-top:1.4rem">
+      <button class="btn sec" onclick="goTo(2)">⬅️ Back</button>
+      <button class="btn sec" onclick="startAgain()">➕ Add another medicine</button>
     </div>
   </div>
 </div>
@@ -456,8 +551,16 @@
 const meds = [];
 const selReminders = new Set();
 let calOff = 0;
+let dayOff = 0;
+let planWeekOff = 0;
 let isSpeaking = false;
 let recog = null;
+
+const MED_COLORS = [
+  '#ffb3b3','#a8d4ff','#b3f0c8','#ffe8a0','#d4b3ff','#ffd4a0','#a0f0f0',
+  '#ffb3d4','#c8e8a0','#a0c8ff'
+];
+let colorIdx = 0;
 
 /* ═══ Spell check ═══ */
 const knownMeds = [
@@ -520,6 +623,8 @@ const defTimes={once:['08:00'],twice:['08:00','20:00'],three:['08:00','13:00','2
 /* ═══ Push med ═══ */
 function pushMed(m){
   m.times=[...(defTimes[m.freq]||['08:00'])];
+  m.color=MED_COLORS[colorIdx%MED_COLORS.length];
+  colorIdx++;
   meds.push(m);
   renderMedList();
 }
@@ -757,15 +862,16 @@ function updTTSBtn(){
 
 /* ═══ Navigation ═══ */
 function goTo(n){
-  if(n===1&&!meds.length){alert('Please add at least one medicine first! 💊');return;}
+  if(n>=1&&!meds.length){alert('Please add at least one medicine first! 💊');return;}
   document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i===n));
   document.querySelectorAll('.step-btn').forEach((b,i)=>{
     b.classList.remove('active','done');
     if(i===n) b.classList.add('active'); else if(i<n) b.classList.add('done');
   });
-  document.getElementById('pf').style.width=[33,66,100][n]+'%';
+  document.getElementById('pf').style.width=[25,50,75,100][n]+'%';
   if(n===1) renderSchedule();
   if(n===2) renderChips('remindChips');
+  if(n===3){renderPlanLegend();setPlanView('day');}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -777,13 +883,162 @@ function saveAll(){
   speak('You are all set! Your medicine plan has been saved. We will remind you when it is time to take your medicine.');
 }
 function startAgain(){
-  meds.length=0; selReminders.clear(); calOff=0;
+  meds.length=0; selReminders.clear(); calOff=0; dayOff=0; planWeekOff=0; colorIdx=0;
   renderMedList();
   document.getElementById('confirmBox').classList.remove('on');
   document.querySelectorAll('.rcard').forEach(c=>c.classList.remove('on'));
   chatReady=false; chatMed={}; chatState='NAME';
   document.getElementById('chatWin').innerHTML='';
   goTo(0); showMethod('chat'); initChat();
+}
+
+/* ═══ My Plan page ═══ */
+function renderPlanLegend(){
+  const el=document.getElementById('planLegend');
+  el.innerHTML='';
+  meds.forEach(m=>{
+    const item=document.createElement('div');
+    item.className='legend-item';
+    item.innerHTML=`<span class="legend-dot" style="background:${m.color}"></span>${m.name} ${m.dose}`;
+    el.appendChild(item);
+  });
+}
+
+function setPlanView(v){
+  document.getElementById('planDayView').style.display=v==='day'?'block':'none';
+  document.getElementById('planWeekView').style.display=v==='week'?'block':'none';
+  document.getElementById('pDayBtn').classList.toggle('active',v==='day');
+  document.getElementById('pWeekBtn').classList.toggle('active',v==='week');
+  if(v==='day') renderDayView();
+  else renderWeekPlan();
+}
+
+function moveDay(d){dayOff+=d;renderDayView();}
+
+function renderDayView(){
+  const today=new Date();
+  const target=new Date(today.getTime()+dayOff*864e5);
+  const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const lbl=document.getElementById('dayLabel');
+  lbl.innerHTML=`<strong>${dayOff===0?'Today — ':''}${DAYS[target.getDay()]}</strong><small>${target.getDate()} ${MONTHS[target.getMonth()]} ${target.getFullYear()}</small>`;
+  const content=document.getElementById('dayContent');
+  content.innerHTML='';
+  if(!meds.length){
+    content.innerHTML='<div class="empty-plan"><span class="ep-icon">💊</span>No medicines added yet.<br>Go back and add some!</div>';
+    return;
+  }
+  const dow=target.getDay(); // 0=Sun,1=Mon
+  const periods=[
+    {label:'🌅 Morning',entries:[]},
+    {label:'☀️ Afternoon',entries:[]},
+    {label:'🌙 Evening',entries:[]}
+  ];
+  const asneeded=[];
+  meds.forEach(m=>{
+    if(m.freq==='asneeded'){asneeded.push(m);return;}
+    if(m.freq==='weekly'&&dow!==1) return;
+    m.times.forEach(t=>{
+      const h=parseInt(t.split(':')[0]);
+      if(h<12) periods[0].entries.push({t,m});
+      else if(h<17) periods[1].entries.push({t,m});
+      else periods[2].entries.push({t,m});
+    });
+  });
+  periods.forEach(p=>p.entries.sort((a,b)=>a.t.localeCompare(b.t)));
+  let anyTimed=false;
+  periods.forEach(p=>{
+    if(!p.entries.length) return;
+    anyTimed=true;
+    const block=document.createElement('div');
+    block.className='period-block';
+    block.innerHTML=`<div class="period-header">${p.label}</div>`;
+    p.entries.forEach(({t,m})=>{
+      const mealInfo=m.meals&&m.meals.length?`🍽️ Take ${m.meals[0]} meal`:'';
+      const div=document.createElement('div');
+      div.className='day-entry';
+      div.style.borderLeftColor=m.color;
+      div.style.background=m.color+'44';
+      div.innerHTML=`<div class="day-time">${t}<small>${getPeriod(t.split(':')[0])}</small></div>
+        <div><div class="day-med-name"><span class="day-badge" style="background:${m.color}"></span>${m.name} — ${m.dose}</div>
+        <div class="day-med-detail">${[mealInfo,m.notes].filter(Boolean).join(' · ')}</div></div>`;
+      block.appendChild(div);
+    });
+    content.appendChild(block);
+  });
+  if(!anyTimed&&!asneeded.length){
+    const div=document.createElement('div');
+    div.className='empty-plan';
+    div.innerHTML='<span class="ep-icon">✅</span>No medicines scheduled for this day.';
+    content.appendChild(div);
+  }
+  if(asneeded.length){
+    const block=document.createElement('div');
+    block.className='period-block';
+    block.innerHTML=`<div class="period-header">🤷 As Needed</div>`;
+    asneeded.forEach(m=>{
+      const div=document.createElement('div');
+      div.className='day-entry';
+      div.style.borderLeftColor=m.color;
+      div.style.background='#f5f5ff';
+      div.innerHTML=`<div class="day-time" style="color:#aaa">—</div>
+        <div><div class="day-med-name"><span class="day-badge" style="background:${m.color}"></span>${m.name} — ${m.dose}</div>
+        <div class="day-med-detail">Take when needed${m.notes?' · '+m.notes:''}</div></div>`;
+      block.appendChild(div);
+    });
+    content.appendChild(block);
+  }
+}
+
+function movePlanWeek(d){planWeekOff+=d;renderWeekPlan();}
+
+function renderWeekPlan(){
+  const today=new Date();
+  const mon=new Date(today);
+  mon.setDate(today.getDate()-((today.getDay()+6)%7)+planWeekOff*7);
+  const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const sun=new Date(mon.getTime()+6*864e5);
+  document.getElementById('weekPlanLabel').textContent=
+    `${mon.getDate()} ${MONTHS[mon.getMonth()]} – ${sun.getDate()} ${MONTHS[sun.getMonth()]}`;
+  const grid=document.getElementById('weekPlanGrid');
+  grid.innerHTML='';
+  const asneeded=meds.filter(m=>m.freq==='asneeded');
+  for(let d=0;d<7;d++){
+    const date=new Date(mon.getTime()+d*864e5);
+    const isToday=date.toDateString()===today.toDateString();
+    const col=document.createElement('div');
+    col.className='wday'+(isToday?' today':'');
+    col.innerHTML=`<div class="wday-lbl">${DAYS[d]}</div><div class="wday-num">${date.getDate()}</div>`;
+    const entries=[];
+    meds.forEach(m=>{
+      if(m.freq==='asneeded') return;
+      if(m.freq==='weekly'&&d!==0) return;
+      m.times.forEach(t=>entries.push({t,m}));
+    });
+    entries.sort((a,b)=>a.t.localeCompare(b.t));
+    entries.forEach(({t,m})=>{
+      const chip=document.createElement('div');
+      chip.className='wchip';
+      chip.style.background=m.color;
+      chip.title=`${m.name} ${m.dose} at ${t}`;
+      chip.textContent=`${t} ${m.name}`;
+      col.appendChild(chip);
+    });
+    grid.appendChild(col);
+  }
+  const asDiv=document.getElementById('asneededWeek');
+  asDiv.innerHTML='';
+  if(asneeded.length){
+    asDiv.innerHTML='<h4>🤷 As needed (any day):</h4>';
+    asneeded.forEach(m=>{
+      const div=document.createElement('div');
+      div.className='asneeded-row';
+      div.style.borderLeftColor=m.color;
+      div.innerHTML=`<span class="day-badge" style="background:${m.color}"></span><strong>${m.name}</strong> — ${m.dose}${m.notes?' · '+m.notes:''}`;
+      asDiv.appendChild(div);
+    });
+  }
 }
 
 /* ══════════════════════════════════════
