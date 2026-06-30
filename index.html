@@ -6,379 +6,201 @@
   <title>My Medicines</title>
   <style>
     :root {
-      --pink: #FFC6C6;
-      --pink-dark: #e89f9f;
-      --blue: #C6E0FF;
-      --blue-dark: #7ab3f0;
-      --green: #C6FFD5;
-      --green-dark: #5cb87a;
-      --yellow: #FFF5C6;
-      --yellow-dark: #e6c84a;
-      --purple: #E8C6FF;
-      --text: #333;
-      --radius: 20px;
+      --pink: #FFC6C6; --pink-dark: #e89f9f;
+      --blue: #C6E0FF; --blue-dark: #7ab3f0;
+      --green: #C6FFD5; --green-dark: #5cb87a;
+      --yellow: #FFF5C6; --yellow-dark: #d4a900;
+      --purple: #E8C6FF; --purple-dark: #9a5cd0;
+      --text: #333; --radius: 20px;
       --shadow: 0 4px 16px rgba(0,0,0,0.10);
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f7f0ff;
-      min-height: 100vh;
-      color: var(--text);
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',Arial,sans-serif; background:#f7f0ff; min-height:100vh; color:var(--text); padding-bottom:6rem; }
+
+    /* ── Floating TTS ── */
+    #ttsFloat {
+      position:fixed; bottom:1.2rem; right:1.2rem; z-index:200;
+      background:var(--blue-dark); color:#fff; border:none; border-radius:50px;
+      padding:.7rem 1.1rem; font-size:.95rem; font-weight:700; cursor:pointer;
+      box-shadow:0 4px 16px rgba(0,0,0,.2); display:flex; align-items:center; gap:.4rem;
+      transition:all .2s;
     }
+    #ttsFloat.speaking { background:#c04040; animation:pulse 1s infinite; }
+    #ttsFloat:hover { transform:scale(1.05); }
+    @keyframes pulse { 0%,100%{box-shadow:0 4px 16px rgba(0,0,0,.2)} 50%{box-shadow:0 4px 26px rgba(192,64,64,.55)} }
 
     /* ── Header ── */
-    .header {
-      background: var(--pink);
-      padding: 1.2rem 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      box-shadow: var(--shadow);
-    }
-    .header-icon { font-size: 2.4rem; }
-    .header h1 {
-      font-size: clamp(1.3rem, 4vw, 2rem);
-      font-weight: 800;
-      color: #7a3a3a;
-    }
-    .header p { font-size: 1rem; color: #7a3a3a; }
+    .header { background:var(--pink); padding:1.1rem 1.4rem; display:flex; align-items:center; gap:.9rem; box-shadow:var(--shadow); }
+    .header-icon { font-size:2.3rem; }
+    .header h1 { font-size:clamp(1.25rem,4vw,1.9rem); font-weight:800; color:#7a3a3a; }
+    .header p { font-size:.9rem; color:#7a3a3a; }
 
-    /* ── Step nav ── */
-    .steps {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 1.2rem 1rem 0;
-      flex-wrap: wrap;
-    }
+    /* ── Steps ── */
+    .steps { display:flex; justify-content:center; gap:.5rem; padding:1.1rem 1rem 0; flex-wrap:wrap; }
     .step-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      background: #fff;
-      border: 3px solid #ddd;
-      border-radius: 14px;
-      padding: 0.6rem 1rem;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #888;
-      min-width: 80px;
-      transition: all 0.2s;
+      display:flex; flex-direction:column; align-items:center; gap:3px;
+      background:#fff; border:3px solid #ddd; border-radius:14px;
+      padding:.55rem .9rem; cursor:pointer; font-size:.82rem; font-weight:700;
+      color:#999; min-width:78px; transition:all .2s;
     }
-    .step-btn .step-icon { font-size: 1.6rem; }
-    .step-btn.active {
-      border-color: var(--pink-dark);
-      background: var(--pink);
-      color: #7a3a3a;
-      box-shadow: var(--shadow);
-    }
-    .step-btn.done {
-      border-color: var(--green-dark);
-      background: var(--green);
-      color: #2a6a3a;
-    }
+    .step-btn .si { font-size:1.5rem; }
+    .step-btn.active { border-color:var(--pink-dark); background:var(--pink); color:#7a3a3a; }
+    .step-btn.done  { border-color:var(--green-dark); background:var(--green); color:#2a6a3a; }
+
+    /* ── Progress ── */
+    .prog-bar { height:8px; background:#e0d0f0; border-radius:8px; margin:.9rem auto; max-width:680px; width:calc(100% - 2rem); }
+    .prog-fill { height:100%; background:var(--pink-dark); border-radius:8px; transition:width .4s; }
 
     /* ── Card ── */
-    .card {
-      background: #fff;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 1.5rem;
-      margin: 1.2rem auto;
-      max-width: 680px;
-      width: calc(100% - 2rem);
-    }
-    .card h2 {
-      font-size: clamp(1.1rem, 3.5vw, 1.5rem);
-      margin-bottom: 0.4rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .card .subtitle {
-      color: #777;
-      font-size: 0.95rem;
-      margin-bottom: 1.2rem;
-    }
+    .card { background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); padding:1.4rem; margin:1.1rem auto; max-width:680px; width:calc(100% - 2rem); }
+    .card h2 { font-size:clamp(1.05rem,3.5vw,1.45rem); margin-bottom:.35rem; display:flex; align-items:center; gap:.45rem; }
+    .subtitle { color:#777; font-size:.92rem; margin-bottom:1.1rem; }
 
-    /* ── Input method buttons ── */
-    .input-methods {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    .method-btn {
-      background: var(--blue);
-      border: 3px solid transparent;
-      border-radius: var(--radius);
-      padding: 1.2rem 0.8rem;
-      cursor: pointer;
-      text-align: center;
-      font-size: 1rem;
-      font-weight: 700;
-      color: #2a4a7a;
-      transition: all 0.2s;
-    }
-    .method-btn .method-icon { font-size: 2.2rem; display: block; margin-bottom: 0.4rem; }
-    .method-btn:hover, .method-btn.active {
-      border-color: var(--blue-dark);
-      background: #a8d0ff;
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
+    /* ── Med summary strip ── */
+    .med-summary { background:var(--yellow); border-radius:14px; padding:.9rem 1rem; margin-bottom:1.1rem; border:2px solid #e6c84a; }
+    .med-summary h3 { font-size:.9rem; color:#7a5800; margin-bottom:.45rem; }
+    .med-chip-row { display:flex; flex-wrap:wrap; gap:.45rem; }
+    .med-chip { background:#fff; border:2px solid #e6c84a; border-radius:20px; padding:.28rem .8rem; font-size:.84rem; font-weight:700; color:#5a4000; }
 
-    /* ── Form fields ── */
-    label {
-      display: block;
-      font-weight: 700;
-      font-size: 1rem;
-      margin-bottom: 0.35rem;
-      margin-top: 1rem;
+    /* ── Method tabs ── */
+    .method-tabs { display:grid; grid-template-columns:repeat(4,1fr); gap:.45rem; margin-bottom:1.1rem; }
+    .mtab {
+      background:#f0f0f0; border:3px solid transparent; border-radius:12px;
+      padding:.65rem .35rem; text-align:center; cursor:pointer;
+      font-size:.78rem; font-weight:700; color:#666; transition:all .2s;
     }
-    input[type="text"], input[type="number"], input[type="time"], select, textarea {
-      width: 100%;
-      padding: 0.9rem 1rem;
-      border: 3px solid #ddd;
-      border-radius: 12px;
-      font-size: 1.05rem;
-      transition: border 0.2s;
-      font-family: inherit;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--blue-dark);
-    }
-    .spell-warning {
-      display: none;
-      background: #fff3cd;
-      border: 2px solid #ffc107;
-      border-radius: 10px;
-      padding: 0.7rem 1rem;
-      margin-top: 0.5rem;
-      font-size: 0.95rem;
-      color: #856404;
-    }
-    .spell-warning.visible { display: flex; align-items: flex-start; gap: 0.5rem; }
+    .mtab .ti { font-size:1.4rem; display:block; }
+    .mtab.active { border-color:var(--blue-dark); background:var(--blue); color:#2a4a7a; }
 
-    /* Checkboxes / toggles */
-    .checkbox-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 0.5rem;
+    /* ── Form ── */
+    label { display:block; font-weight:700; font-size:.97rem; margin:.85rem 0 .3rem; }
+    input[type=text],input[type=email],input[type=time],input[type=number],select,textarea {
+      width:100%; padding:.82rem .95rem; border:3px solid #ddd; border-radius:12px;
+      font-size:1rem; font-family:inherit; transition:border .2s;
     }
-    .check-pill {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--yellow);
-      border: 3px solid transparent;
-      border-radius: 40px;
-      padding: 0.55rem 1rem;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: #5a4800;
-      transition: all 0.15s;
-      user-select: none;
-    }
-    .check-pill input { display: none; }
-    .check-pill.checked {
-      background: var(--yellow-dark);
-      border-color: #b8940a;
-      color: #fff;
-    }
-    .check-pill .pill-icon { font-size: 1.2rem; }
+    input:focus,select:focus,textarea:focus { outline:none; border-color:var(--blue-dark); }
 
-    /* Medication list */
-    .med-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
-    .med-item {
-      background: var(--yellow);
-      border-radius: 16px;
-      padding: 1rem 1.2rem;
-      border: 2px solid #e6c84a;
-      position: relative;
-    }
-    .med-item .med-name { font-size: 1.1rem; font-weight: 800; }
-    .med-item .med-detail { font-size: 0.9rem; color: #555; margin-top: 0.2rem; }
-    .med-item .remove-btn {
-      position: absolute;
-      top: 0.7rem;
-      right: 0.8rem;
-      background: #f5c6c6;
-      border: none;
-      border-radius: 50%;
-      width: 32px; height: 32px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      color: #a00;
-      line-height: 1;
-    }
+    .spell-warn { display:none; background:#fff3cd; border:2px solid #ffc107; border-radius:10px; padding:.6rem .9rem; margin-top:.4rem; font-size:.92rem; color:#856404; align-items:flex-start; gap:.45rem; }
+    .spell-warn.on { display:flex; }
 
-    /* Schedule */
-    .schedule-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
-    .sched-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      background: #f0f8ff;
-      border-radius: 14px;
-      padding: 0.9rem 1.1rem;
-      border-left: 6px solid var(--blue-dark);
+    /* ── Meal pills (div, no label conflict) ── */
+    .meal-pills { display:flex; flex-wrap:wrap; gap:.65rem; margin-top:.5rem; }
+    .mpill {
+      display:flex; align-items:center; gap:.4rem; background:var(--yellow);
+      border:3px solid transparent; border-radius:40px; padding:.55rem .95rem;
+      cursor:pointer; font-weight:600; font-size:.92rem; color:#5a4800;
+      user-select:none; transition:all .15s;
     }
-    .sched-time {
-      font-size: 1.3rem;
-      font-weight: 900;
-      color: #2a4a7a;
-      min-width: 72px;
-      text-align: center;
-    }
-    .sched-time small { display: block; font-size: 0.7rem; font-weight: 600; color: #88a; }
-    .sched-info .sched-name { font-weight: 700; font-size: 1rem; }
-    .sched-info .sched-notes { font-size: 0.88rem; color: #555; margin-top: 2px; }
-    .meal-tag {
-      display: inline-block;
-      background: var(--green);
-      color: #2a6a3a;
-      border-radius: 20px;
-      padding: 2px 10px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      margin-left: 6px;
-    }
+    .mpill:hover { background:#ffe999; }
+    .mpill.on { background:var(--yellow-dark); border-color:#9a7000; color:#fff; }
+    .mpill .pi { font-size:1.15rem; }
 
-    /* Reminder options */
-    .reminder-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .reminder-card {
-      background: var(--purple);
-      border: 3px solid transparent;
-      border-radius: var(--radius);
-      padding: 1.2rem 1rem;
-      text-align: center;
-      cursor: pointer;
-      font-weight: 700;
-      color: #4a1a7a;
-      transition: all 0.2s;
-    }
-    .reminder-card .r-icon { font-size: 2.2rem; display: block; margin-bottom: 0.5rem; }
-    .reminder-card:hover, .reminder-card.selected {
-      border-color: #9a5cd0;
-      background: #d9a8ff;
-      transform: translateY(-2px);
-    }
-    .reminder-card.selected::after {
-      content: '✓';
-      display: block;
-      font-size: 1.4rem;
-      color: #5a0a9a;
-      margin-top: 0.3rem;
-    }
+    /* ── Photo buttons ── */
+    .photo-btns { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; margin-bottom:.9rem; }
+    .pbtn { background:var(--blue); border:3px solid transparent; border-radius:var(--radius); padding:1.1rem .7rem; cursor:pointer; text-align:center; font-weight:700; color:#2a4a7a; font-size:.92rem; transition:all .2s; }
+    .pbtn .pbi { font-size:1.9rem; display:block; margin-bottom:.3rem; }
+    .pbtn:hover { background:#a8d0ff; border-color:var(--blue-dark); }
 
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--pink-dark);
-      color: #fff;
-      border: none;
-      border-radius: 40px;
-      padding: 0.85rem 1.8rem;
-      font-size: 1.05rem;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 1.2rem;
-    }
-    .btn:hover { background: #c87070; transform: translateY(-1px); }
-    .btn.secondary {
-      background: #ddd;
-      color: #555;
-    }
-    .btn.secondary:hover { background: #ccc; }
-    .btn.success { background: var(--green-dark); }
-    .btn.success:hover { background: #48a068; }
-    .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    /* ── Med item list ── */
+    .med-list { display:flex; flex-direction:column; gap:.9rem; margin-top:.9rem; }
+    .med-item { background:var(--yellow); border-radius:14px; padding:.9rem 1.1rem; border:2px solid #e6c84a; position:relative; }
+    .med-item .mn { font-size:1.05rem; font-weight:800; }
+    .med-item .md { font-size:.87rem; color:#555; margin-top:.18rem; }
+    .xbtn { position:absolute; top:.65rem; right:.75rem; background:#f5c6c6; border:none; border-radius:50%; width:30px; height:30px; font-size:1rem; cursor:pointer; color:#a00; line-height:1; }
 
-    /* Photo / barcode area */
-    .upload-area {
-      border: 3px dashed #aad;
-      border-radius: var(--radius);
-      padding: 2rem;
-      text-align: center;
-      cursor: pointer;
-      color: #667;
-      background: #f5f5ff;
-      transition: background 0.2s;
+    /* ── View toggle ── */
+    .view-tog { display:flex; background:#f0f0f0; border-radius:12px; padding:4px; margin-bottom:.9rem; }
+    .vbtn { flex:1; padding:.48rem; border:none; border-radius:10px; font-weight:700; font-size:.88rem; cursor:pointer; background:transparent; color:#888; transition:all .2s; }
+    .vbtn.active { background:#fff; color:var(--text); box-shadow:0 2px 8px rgba(0,0,0,.1); }
+
+    /* ── Schedule list ── */
+    .sched-list { display:flex; flex-direction:column; gap:.7rem; }
+    .sched-item { display:flex; align-items:flex-start; gap:.9rem; background:#f0f8ff; border-radius:14px; padding:.85rem 1rem; border-left:6px solid var(--blue-dark); }
+    .time-col { display:flex; flex-direction:column; align-items:center; min-width:90px; }
+    .time-col input[type=time] { font-size:1.1rem; font-weight:900; color:#2a4a7a; border:2px solid #ddd; border-radius:8px; padding:.28rem .4rem; width:90px; text-align:center; font-family:inherit; }
+    .period-lbl { font-size:.68rem; font-weight:600; color:#88a; margin-top:2px; }
+    .sched-name { font-weight:700; font-size:.97rem; }
+    .sched-notes { font-size:.84rem; color:#555; margin-top:2px; }
+    .meal-tag { display:inline-block; background:var(--green); color:#2a6a3a; border-radius:20px; padding:2px 9px; font-size:.77rem; font-weight:700; margin-left:5px; }
+    .asneeded-section { background:#f5f5ff; border-radius:14px; padding:.85rem 1rem; border-left:6px solid #aaa; margin-top:.7rem; }
+
+    /* ── Calendar ── */
+    .cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:.9rem; }
+    .cal-nav button { background:var(--blue); border:none; border-radius:10px; padding:.45rem .9rem; font-size:1rem; cursor:pointer; font-weight:700; }
+    .cal-nav h3 { font-size:.95rem; color:#555; }
+    .cal-week { display:grid; grid-template-columns:repeat(7,1fr); gap:.35rem; }
+    .cal-day { background:#f8f8ff; border-radius:10px; padding:.4rem .25rem; min-height:90px; border:2px solid #e0d0f0; }
+    .cal-day.today { border-color:var(--pink-dark); background:#fff5f5; }
+    .cal-dlbl { font-size:.65rem; font-weight:700; text-align:center; color:#888; margin-bottom:.2rem; }
+    .cal-dnum { font-size:.95rem; font-weight:800; text-align:center; margin-bottom:.35rem; }
+    .cal-day.today .cal-dnum { color:var(--pink-dark); }
+    .cal-chip { background:var(--blue); border-radius:5px; padding:2px 3px; font-size:.6rem; font-weight:700; color:#2a4a7a; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer; }
+    .cal-chip:hover { background:var(--blue-dark); color:#fff; }
+
+    /* ── Reminders ── */
+    .remind-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:.9rem; margin-top:.9rem; }
+    .rcard {
+      background:var(--purple); border:3px solid transparent; border-radius:var(--radius);
+      padding:1rem .8rem; text-align:center; cursor:pointer; font-weight:700;
+      color:#4a1a7a; transition:all .2s; position:relative;
     }
-    .upload-area:hover { background: #eeeeff; }
-    .upload-area .upload-icon { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
-    #photoInput, #barcodeInput { display: none; }
-    #photoPreview {
-      max-width: 100%;
-      border-radius: 12px;
-      margin-top: 1rem;
-      display: none;
-    }
+    .rcard .ri { font-size:1.9rem; display:block; margin-bottom:.4rem; }
+    .rcard:hover,.rcard.on { border-color:#9a5cd0; background:#d9a8ff; }
+    .rcard.on::after { content:'✓'; position:absolute; top:.35rem; right:.55rem; font-size:1rem; color:#5a0a9a; }
+    .rcard .spk { position:absolute; bottom:.4rem; right:.5rem; background:none; border:none; cursor:pointer; font-size:.95rem; opacity:.55; }
+    .rcard .spk:hover { opacity:1; }
 
-    /* Section visibility */
-    .page { display: none; }
-    .page.active { display: block; }
+    /* ── TTS panel ── */
+    .tts-panel { background:var(--blue); border-radius:14px; padding:1rem; margin-top:1.2rem; }
+    .tts-panel h3 { margin-bottom:.4rem; }
+    .tts-panel p { font-size:.88rem; color:#2a4a7a; margin-bottom:.7rem; }
 
-    /* Spell check highlight */
-    .spell-ok { color: #2a6a3a; }
-    .spell-err { color: #a00; text-decoration: underline wavy red; }
+    /* ── Buttons ── */
+    .btn { display:inline-flex; align-items:center; gap:.45rem; background:var(--pink-dark); color:#fff; border:none; border-radius:40px; padding:.8rem 1.6rem; font-size:1rem; font-weight:800; cursor:pointer; transition:all .2s; margin-top:1.1rem; }
+    .btn:hover { background:#c87070; transform:translateY(-1px); }
+    .btn.sec { background:#ddd; color:#555; }
+    .btn.sec:hover { background:#ccc; }
+    .btn.ok { background:var(--green-dark); }
+    .btn.ok:hover { background:#48a068; }
+    .btn-row { display:flex; gap:.65rem; flex-wrap:wrap; }
 
-    /* Accessible focus */
-    *:focus-visible { outline: 3px solid #7ab3f0; outline-offset: 2px; }
+    /* ── Chat ── */
+    .chat-win { border:2px solid #ddd; border-radius:14px; height:270px; overflow-y:auto; padding:.9rem; background:#fafafa; display:flex; flex-direction:column; gap:.55rem; }
+    .cb { max-width:82%; padding:.55rem .95rem; border-radius:16px; font-size:.93rem; line-height:1.42; }
+    .cb.bot { background:var(--blue); color:#2a3a6a; align-self:flex-start; border-bottom-left-radius:4px; }
+    .cb.user { background:var(--pink-dark); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
+    .cb.typing { background:#e8e8e8; color:#999; align-self:flex-start; }
+    .chat-row { display:flex; gap:.45rem; margin-top:.7rem; align-items:stretch; }
+    .chat-in { flex:1; padding:.7rem .9rem; border:2px solid #ddd; border-radius:12px; font-size:.97rem; font-family:inherit; }
+    .chat-in:focus { outline:none; border-color:var(--blue-dark); }
+    .mic-btn { background:var(--pink-dark); color:#fff; border:none; border-radius:12px; padding:.7rem .95rem; font-size:1.25rem; cursor:pointer; transition:all .2s; min-width:48px; }
+    .mic-btn.rec { background:#d04040; animation:pulse .8s infinite; }
+    .mic-btn:hover { background:#c87070; }
+    .send-btn { background:var(--blue-dark); color:#fff; border:none; border-radius:12px; padding:.7rem .95rem; font-size:1rem; cursor:pointer; font-weight:700; }
 
-    /* Big confirm box */
-    .confirm-box {
-      background: var(--green);
-      border: 3px solid var(--green-dark);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      text-align: center;
-      display: none;
-    }
-    .confirm-box.visible { display: block; }
-    .confirm-box .big-check { font-size: 3rem; }
-    .confirm-box h3 { font-size: 1.4rem; color: #1a4a2a; margin: 0.5rem 0; }
-    .confirm-box p { color: #2a6a3a; }
+    /* ── Confirm ── */
+    .confirm-box { background:var(--green); border:3px solid var(--green-dark); border-radius:var(--radius); padding:1.4rem; text-align:center; display:none; margin-top:1.1rem; }
+    .confirm-box.on { display:block; }
+    .confirm-box .big { font-size:2.8rem; }
+    .confirm-box h3 { font-size:1.35rem; color:#1a4a2a; margin:.45rem 0; }
+    .confirm-box p { color:#2a6a3a; }
 
-    /* Progress bar */
-    .progress-bar {
-      height: 8px;
-      background: #e0d0f0;
-      border-radius: 8px;
-      margin: 1rem auto;
-      max-width: 680px;
-      width: calc(100% - 2rem);
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      background: var(--pink-dark);
-      border-radius: 8px;
-      transition: width 0.4s;
-    }
+    /* ── Pages ── */
+    .page { display:none; }
+    .page.active { display:block; }
+    *:focus-visible { outline:3px solid #7ab3f0; outline-offset:2px; }
 
-    @media (max-width: 480px) {
-      .card { padding: 1.1rem; }
-      .step-btn { min-width: 68px; padding: 0.5rem 0.6rem; font-size: 0.75rem; }
+    @media(max-width:480px){
+      .card{padding:1rem;} .method-tabs{grid-template-columns:repeat(2,1fr);}
+      .step-btn{min-width:66px;padding:.45rem .55rem;font-size:.74rem;}
+      .cal-chip{font-size:.55rem;} .photo-btns{grid-template-columns:1fr 1fr;}
     }
   </style>
 </head>
 <body>
+
+<!-- Floating read-aloud button -->
+<button id="ttsFloat" onclick="togglePageTTS()" aria-label="Read this page aloud">🔊 Read page</button>
 
 <!-- Header -->
 <div class="header">
@@ -389,58 +211,49 @@
   </div>
 </div>
 
-<!-- Step navigation -->
+<!-- Step nav -->
 <div class="steps">
-  <button class="step-btn active" onclick="goTo(0)" id="step0">
-    <span class="step-icon">💊</span>Add Medicine
-  </button>
-  <button class="step-btn" onclick="goTo(1)" id="step1">
-    <span class="step-icon">📅</span>Schedule
-  </button>
-  <button class="step-btn" onclick="goTo(2)" id="step2">
-    <span class="step-icon">🔔</span>Reminders
-  </button>
+  <button class="step-btn active" onclick="goTo(0)" id="step0"><span class="si">💊</span>Add Medicine</button>
+  <button class="step-btn" onclick="goTo(1)" id="step1"><span class="si">📅</span>Schedule</button>
+  <button class="step-btn" onclick="goTo(2)" id="step2"><span class="si">🔔</span>Reminders</button>
 </div>
+<div class="prog-bar"><div class="prog-fill" id="pf" style="width:33%"></div></div>
 
-<!-- Progress bar -->
-<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:33%"></div></div>
-
-<!-- ══════════════ PAGE 0: Add Medicine ══════════════ -->
+<!-- ═══════════ PAGE 0: Add Medicine ═══════════ -->
 <div class="page active" id="page0">
   <div class="card">
     <h2>💊 Add Your Medicine</h2>
-    <p class="subtitle">How would you like to add your medicine?</p>
+    <p class="subtitle">Choose how to add your medicine</p>
 
-    <div class="input-methods">
-      <button class="method-btn active" onclick="showMethod('type')" id="m-type">
-        <span class="method-icon">⌨️</span>Type it in
-      </button>
-      <button class="method-btn" onclick="showMethod('photo')" id="m-photo">
-        <span class="method-icon">📷</span>Take a photo
-      </button>
-      <button class="method-btn" onclick="showMethod('barcode')" id="m-barcode">
-        <span class="method-icon">📦</span>Scan barcode
-      </button>
+    <div class="method-tabs">
+      <div class="mtab active" onclick="showMethod('chat')" id="tab-chat"><span class="ti">🤖</span>AI Chat</div>
+      <div class="mtab" onclick="showMethod('type')" id="tab-type"><span class="ti">⌨️</span>Type it</div>
+      <div class="mtab" onclick="showMethod('photo')" id="tab-photo"><span class="ti">📷</span>Photo</div>
+      <div class="mtab" onclick="showMethod('barcode')" id="tab-barcode"><span class="ti">📦</span>Barcode</div>
     </div>
 
-    <!-- TYPE METHOD -->
-    <div id="method-type">
-      <label for="medName">💊 Medicine name</label>
-      <input type="text" id="medName" placeholder="e.g. Metformin" oninput="checkSpelling('medName','medNameWarn','medNameSuggest')" autocomplete="off">
-      <div class="spell-warning" id="medNameWarn">
-        <span>⚠️</span>
-        <span>Did you mean: <strong id="medNameSuggest"></strong>? Please double-check the spelling.</span>
+    <!-- ── AI Chat ── -->
+    <div id="method-chat">
+      <div class="chat-win" id="chatWin"></div>
+      <div class="chat-row">
+        <input class="chat-in" id="chatIn" type="text" placeholder="Type here or tap the mic to speak…" onkeydown="if(event.key==='Enter')sendChat()" aria-label="Chat input">
+        <button class="mic-btn" id="micBtn" onclick="toggleMic()" aria-label="Speak your answer">🎤</button>
+        <button class="send-btn" onclick="sendChat()" aria-label="Send">➤</button>
       </div>
+    </div>
 
-      <label for="medDose">💉 Dose</label>
-      <input type="text" id="medDose" placeholder="e.g. 500mg" oninput="checkSpelling('medDose','medDoseWarn','medDoseSuggest')" autocomplete="off">
-      <div class="spell-warning" id="medDoseWarn">
-        <span>⚠️</span>
-        <span>Did you mean: <strong id="medDoseSuggest"></strong>? Please double-check this dose.</span>
-      </div>
+    <!-- ── Type ── -->
+    <div id="method-type" style="display:none">
+      <label for="mN">💊 Medicine name</label>
+      <input type="text" id="mN" placeholder="e.g. Metformin" oninput="chkSpell('mN','wN','sN',false)" autocomplete="off">
+      <div class="spell-warn" id="wN"><span>⚠️</span><span>Did you mean: <strong id="sN"></strong>? Please double-check the spelling.</span></div>
 
-      <label for="medFreq">🕐 How often?</label>
-      <select id="medFreq">
+      <label for="mD">💉 Dose</label>
+      <input type="text" id="mD" placeholder="e.g. 500mg" oninput="chkSpell('mD','wD','sD',true)" autocomplete="off">
+      <div class="spell-warn" id="wD"><span>⚠️</span><span>Did you mean: <strong id="sD"></strong>? Please double-check this dose.</span></div>
+
+      <label for="mF">🕐 How often?</label>
+      <select id="mF">
         <option value="">-- Choose --</option>
         <option value="once">Once a day</option>
         <option value="twice">Twice a day</option>
@@ -450,139 +263,149 @@
         <option value="asneeded">Only when needed</option>
       </select>
 
-      <label>🍽️ Should it be taken with food?</label>
-      <div class="checkbox-group">
-        <label class="check-pill" id="pill-before" onclick="togglePill(this)">
-          <input type="checkbox" name="meal" value="before"> <span class="pill-icon">🌅</span> Before meal
-        </label>
-        <label class="check-pill" id="pill-with" onclick="togglePill(this)">
-          <input type="checkbox" name="meal" value="with"> <span class="pill-icon">🍽️</span> With meal
-        </label>
-        <label class="check-pill" id="pill-after" onclick="togglePill(this)">
-          <input type="checkbox" name="meal" value="after"> <span class="pill-icon">🌇</span> After meal
-        </label>
-        <label class="check-pill" id="pill-any" onclick="togglePill(this)">
-          <input type="checkbox" name="meal" value="any"> <span class="pill-icon">🤷</span> Doesn't matter
-        </label>
+      <label>🍽️ Take with food?</label>
+      <div class="meal-pills" id="mealPills">
+        <div class="mpill" data-v="before" onclick="toggleMpill(this)"><span class="pi">🌅</span>Before meal</div>
+        <div class="mpill" data-v="with"   onclick="toggleMpill(this)"><span class="pi">🍽️</span>With meal</div>
+        <div class="mpill" data-v="after"  onclick="toggleMpill(this)"><span class="pi">🌇</span>After meal</div>
+        <div class="mpill" data-v="any"    onclick="toggleMpill(this)"><span class="pi">🤷</span>Doesn't matter</div>
       </div>
 
-      <label for="medNotes">📝 Any extra notes? (optional)</label>
-      <textarea id="medNotes" rows="2" placeholder="e.g. Take with a full glass of water"></textarea>
+      <label for="mNt">📝 Extra notes (optional)</label>
+      <textarea id="mNt" rows="2" placeholder="e.g. Take with a full glass of water"></textarea>
 
-      <div class="btn-row">
-        <button class="btn" onclick="addMedication()">➕ Add this medicine</button>
-      </div>
+      <div class="btn-row"><button class="btn" onclick="addManual()">➕ Add this medicine</button></div>
     </div>
 
-    <!-- PHOTO METHOD -->
+    <!-- ── Photo ── -->
     <div id="method-photo" style="display:none">
-      <p style="margin-bottom:1rem; color:#555;">Take a photo of your prescription or medicine box and we will try to read the details.</p>
-      <div class="upload-area" onclick="document.getElementById('photoInput').click()">
-        <span class="upload-icon">📷</span>
-        <strong>Tap here to take a photo or choose from your gallery</strong>
-        <p style="margin-top:0.5rem; font-size:0.9rem">We accept JPG, PNG, HEIC</p>
+      <p style="margin-bottom:.9rem;color:#555">Take a photo of your prescription or choose one from your gallery.</p>
+      <div class="photo-btns">
+        <button class="pbtn" onclick="document.getElementById('camIn').click()"><span class="pbi">📷</span>Take a photo</button>
+        <button class="pbtn" onclick="document.getElementById('galIn').click()"><span class="pbi">🖼️</span>From gallery</button>
       </div>
-      <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto(event)">
-      <img id="photoPreview" alt="Your prescription photo">
-      <div id="photoResult" style="margin-top:1rem;display:none">
-        <div class="spell-warning visible" style="display:flex">
-          <span>👆</span>
-          <span>We have read your prescription. Please <strong>check each medicine name and dose carefully</strong> before saving.</span>
-        </div>
-        <label for="photoMedName">💊 Medicine name (from photo)</label>
-        <input type="text" id="photoMedName" oninput="checkSpelling('photoMedName','photoNameWarn','photoNameSuggest')">
-        <div class="spell-warning" id="photoNameWarn">
-          <span>⚠️</span><span>Did you mean: <strong id="photoNameSuggest"></strong>? Please check.</span>
-        </div>
-        <label for="photoMedDose">💉 Dose (from photo)</label>
-        <input type="text" id="photoMedDose" oninput="checkSpelling('photoMedDose','photoDoseWarn','photoDoseSuggest')">
-        <div class="spell-warning" id="photoDoseWarn">
-          <span>⚠️</span><span>Did you mean: <strong id="photoDoseSuggest"></strong>? Please check.</span>
-        </div>
-        <button class="btn" onclick="addFromPhoto()">➕ Add this medicine</button>
+      <input type="file" id="camIn" accept="image/*" capture="environment" onchange="handlePhoto(event)" style="display:none">
+      <input type="file" id="galIn" accept="image/*" onchange="handlePhoto(event)" style="display:none">
+      <img id="photoPreview" alt="Your prescription" style="display:none;max-width:100%;border-radius:12px;margin-top:.9rem">
+      <div id="photoResult" style="display:none;margin-top:.9rem">
+        <div class="spell-warn on" style="margin-bottom:.7rem"><span>👆</span><span>Please <strong>check each name and dose carefully</strong> before saving.</span></div>
+        <label for="pN">💊 Medicine name (from photo)</label>
+        <input type="text" id="pN" oninput="chkSpell('pN','wpN','spN',false)">
+        <div class="spell-warn" id="wpN"><span>⚠️</span><span>Did you mean: <strong id="spN"></strong>?</span></div>
+        <label for="pD">💉 Dose</label>
+        <input type="text" id="pD" oninput="chkSpell('pD','wpD','spD',true)">
+        <div class="spell-warn" id="wpD"><span>⚠️</span><span>Did you mean: <strong id="spD"></strong>?</span></div>
+        <button class="btn" onclick="addPhoto()">➕ Add this medicine</button>
       </div>
     </div>
 
-    <!-- BARCODE METHOD -->
+    <!-- ── Barcode ── -->
     <div id="method-barcode" style="display:none">
-      <p style="margin-bottom:1rem; color:#555;">Point your camera at the barcode on your medicine box.</p>
-      <div class="upload-area" onclick="startBarcodeScanner()">
-        <span class="upload-icon">📦</span>
-        <strong>Tap here to scan the barcode</strong>
-        <p style="margin-top:0.5rem; font-size:0.9rem">Or upload an image of the barcode</p>
+      <p style="margin-bottom:.9rem;color:#555">Point your camera at the barcode on your medicine box.</p>
+      <div class="photo-btns">
+        <button class="pbtn" onclick="document.getElementById('bcCam').click()"><span class="pbi">📷</span>Scan with camera</button>
+        <button class="pbtn" onclick="document.getElementById('bcGal').click()"><span class="pbi">🖼️</span>Choose image</button>
       </div>
-      <input type="file" id="barcodeInput" accept="image/*" capture="environment" onchange="handleBarcode(event)">
-      <div id="barcodeResult" style="margin-top:1rem;display:none">
-        <p style="color:#2a6a3a; font-weight:700; margin-bottom:0.5rem">✅ Barcode scanned! Please check these details:</p>
-        <label for="barcodeMedName">💊 Medicine name</label>
-        <input type="text" id="barcodeMedName" oninput="checkSpelling('barcodeMedName','barcodeNameWarn','barcodeNameSuggest')">
-        <div class="spell-warning" id="barcodeNameWarn">
-          <span>⚠️</span><span>Did you mean: <strong id="barcodeNameSuggest"></strong>? Please check.</span>
-        </div>
-        <label for="barcodeMedDose">💉 Dose</label>
-        <input type="text" id="barcodeMedDose" oninput="checkSpelling('barcodeMedDose','barcodeDoseWarn','barcodeDoseSuggest')">
-        <div class="spell-warning" id="barcodeDoseWarn">
-          <span>⚠️</span><span>Did you mean: <strong id="barcodeDoseSuggest"></strong>? Please check.</span>
-        </div>
-        <button class="btn" onclick="addFromBarcode()">➕ Add this medicine</button>
+      <input type="file" id="bcCam" accept="image/*" capture="environment" onchange="handleBarcode(event)" style="display:none">
+      <input type="file" id="bcGal" accept="image/*" onchange="handleBarcode(event)" style="display:none">
+      <div id="bcResult" style="display:none;margin-top:.9rem">
+        <p style="color:#2a6a3a;font-weight:700;margin-bottom:.5rem">✅ Barcode scanned! Please check these details:</p>
+        <label for="bcN">💊 Medicine name</label>
+        <input type="text" id="bcN" oninput="chkSpell('bcN','wbcN','sbcN',false)">
+        <div class="spell-warn" id="wbcN"><span>⚠️</span><span>Did you mean: <strong id="sbcN"></strong>?</span></div>
+        <label for="bcD">💉 Dose</label>
+        <input type="text" id="bcD" oninput="chkSpell('bcD','wbcD','sbcD',true)">
+        <div class="spell-warn" id="wbcD"><span>⚠️</span><span>Did you mean: <strong id="sbcD"></strong>?</span></div>
+        <button class="btn" onclick="addBarcode()">➕ Add this medicine</button>
       </div>
     </div>
   </div>
 
-  <!-- Added medicines list -->
+  <!-- Added medicines -->
   <div class="card" id="medListCard" style="display:none">
     <h2>✅ Your Medicines</h2>
     <p class="subtitle">Tap ✕ to remove a medicine</p>
     <div class="med-list" id="medList"></div>
-    <div class="btn-row" style="margin-top:1.2rem">
-      <button class="btn success" onclick="goTo(1)">Next: Make my schedule ➡️</button>
+    <div class="btn-row" style="margin-top:1.1rem">
+      <button class="btn ok" onclick="goTo(1)">Next: Make my schedule ➡️</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ PAGE 1: Schedule ══════════════ -->
+<!-- ═══════════ PAGE 1: Schedule ═══════════ -->
 <div class="page" id="page1">
   <div class="card">
     <h2>📅 Your Medicine Schedule</h2>
-    <p class="subtitle">Here is when you need to take your medicines each day</p>
-    <div class="schedule-list" id="scheduleList"></div>
-    <div class="btn-row" style="margin-top:1.5rem">
-      <button class="btn secondary" onclick="goTo(0)">⬅️ Back</button>
-      <button class="btn success" onclick="goTo(2)">Next: Set reminders ➡️</button>
+    <div class="med-summary">
+      <h3>💊 Medicines you are taking:</h3>
+      <div class="med-chip-row" id="schedChips"></div>
+    </div>
+    <p class="subtitle">Tap any time box to change when you take your medicine</p>
+
+    <div class="view-tog">
+      <button class="vbtn active" id="vListBtn" onclick="setView('list')">📋 List view</button>
+      <button class="vbtn" id="vCalBtn" onclick="setView('cal')">📆 Calendar view</button>
+    </div>
+
+    <!-- List view -->
+    <div id="listView">
+      <div class="sched-list" id="schedList"></div>
+    </div>
+
+    <!-- Calendar view -->
+    <div id="calView" style="display:none">
+      <div class="cal-nav">
+        <button onclick="moveWeek(-1)">◀</button>
+        <h3 id="calLabel"></h3>
+        <button onclick="moveWeek(1)">▶</button>
+      </div>
+      <div class="cal-week" id="calGrid"></div>
+    </div>
+
+    <div class="btn-row" style="margin-top:1.4rem">
+      <button class="btn sec" onclick="goTo(0)">⬅️ Back</button>
+      <button class="btn ok" onclick="goTo(2)">Next: Set reminders ➡️</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ PAGE 2: Reminders ══════════════ -->
+<!-- ═══════════ PAGE 2: Reminders ═══════════ -->
 <div class="page" id="page2">
   <div class="card">
     <h2>🔔 How should we remind you?</h2>
-    <p class="subtitle">Choose as many reminders as you like</p>
+    <div class="med-summary">
+      <h3>💊 You will be reminded to take:</h3>
+      <div class="med-chip-row" id="remindChips"></div>
+    </div>
+    <p class="subtitle">Choose as many as you like. Tap 🔊 to hear what each reminder will say.</p>
 
-    <div class="reminder-grid">
-      <div class="reminder-card" id="r-notif" onclick="toggleReminder('r-notif')">
-        <span class="r-icon">📱</span>Phone notification
+    <div class="remind-grid">
+      <div class="rcard" id="r-notif" onclick="toggleR('r-notif')">
+        <span class="ri">📱</span>Phone notification
+        <button class="spk" onclick="event.stopPropagation();speakR('notif')" aria-label="Hear this reminder">🔊</button>
       </div>
-      <div class="reminder-card" id="r-alarm" onclick="toggleReminder('r-alarm')">
-        <span class="r-icon">⏰</span>Alarm sound
+      <div class="rcard" id="r-alarm" onclick="toggleR('r-alarm')">
+        <span class="ri">⏰</span>Alarm sound
+        <button class="spk" onclick="event.stopPropagation();speakR('alarm')" aria-label="Hear this reminder">🔊</button>
       </div>
-      <div class="reminder-card" id="r-calendar" onclick="toggleReminder('r-calendar')">
-        <span class="r-icon">📆</span>Calendar event
+      <div class="rcard" id="r-calendar" onclick="toggleR('r-calendar')">
+        <span class="ri">📆</span>Calendar event
+        <button class="spk" onclick="event.stopPropagation();speakR('calendar')" aria-label="Hear this reminder">🔊</button>
       </div>
-      <div class="reminder-card" id="r-email" onclick="toggleReminder('r-email')">
-        <span class="r-icon">✉️</span>Email reminder
+      <div class="rcard" id="r-contacts" onclick="toggleR('r-contacts')">
+        <span class="ri">👥</span>Tell my contacts
+        <button class="spk" onclick="event.stopPropagation();speakR('contacts')" aria-label="Hear this reminder">🔊</button>
       </div>
-      <div class="reminder-card" id="r-carer" onclick="toggleReminder('r-carer')">
-        <span class="r-icon">👤</span>Tell my carer
-      </div>
-      <div class="reminder-card" id="r-sms" onclick="toggleReminder('r-sms')">
-        <span class="r-icon">💬</span>Text message
+      <div class="rcard" id="r-sms" onclick="toggleR('r-sms')">
+        <span class="ri">💬</span>Text message
+        <button class="spk" onclick="event.stopPropagation();speakR('sms')" aria-label="Hear this reminder">🔊</button>
       </div>
     </div>
 
-    <div id="notifSettings" style="display:none; margin-top:1rem">
-      <label for="reminderLead">⏱️ Remind me how many minutes before?</label>
-      <select id="reminderLead">
+    <!-- Extra fields per reminder type -->
+    <div id="notifExtra" style="display:none;margin-top:.9rem">
+      <label for="remLead">⏱️ Remind me how many minutes before?</label>
+      <select id="remLead">
         <option value="5">5 minutes before</option>
         <option value="10" selected>10 minutes before</option>
         <option value="15">15 minutes before</option>
@@ -590,301 +413,580 @@
       </select>
     </div>
 
-    <div id="carerSettings" style="display:none; margin-top:1rem">
-      <label for="carerContact">👤 Carer's name or phone number</label>
-      <input type="text" id="carerContact" placeholder="e.g. Mum – 07700 900000">
+    <div id="contactsExtra" style="display:none;margin-top:.9rem">
+      <label for="ctName">👤 Contact name</label>
+      <input type="text" id="ctName" placeholder="e.g. Mum, Dad, Support worker">
+      <label for="ctPhone">📞 Phone number</label>
+      <input type="text" id="ctPhone" placeholder="e.g. 07700 900000">
+      <label for="ctEmail">✉️ Email address</label>
+      <input type="email" id="ctEmail" placeholder="e.g. mum@email.com">
     </div>
 
-    <div id="emailSettings" style="display:none; margin-top:1rem">
-      <label for="emailAddr">✉️ Email address</label>
-      <input type="text" id="emailAddr" placeholder="e.g. yourname@email.com">
+    <div id="smsExtra" style="display:none;margin-top:.9rem">
+      <label for="smsPhone">📞 Phone number for texts</label>
+      <input type="text" id="smsPhone" placeholder="e.g. 07700 900000">
     </div>
 
-    <div class="btn-row" style="margin-top:1.5rem">
-      <button class="btn secondary" onclick="goTo(1)">⬅️ Back</button>
-      <button class="btn success" onclick="saveAll()">🎉 All done! Save my plan</button>
+    <!-- Read-aloud panel -->
+    <div class="tts-panel">
+      <h3>🔊 Read-aloud reminders</h3>
+      <p>Your device can speak your reminder aloud when it is time to take your medicine.</p>
+      <label style="margin-top:0;display:flex;align-items:center;gap:.5rem;cursor:pointer">
+        <input type="checkbox" id="ttsOn" style="width:1.1rem;height:1.1rem"> Read reminders aloud
+      </label>
+      <button class="btn" style="margin-top:.75rem;background:var(--blue-dark);padding:.55rem 1.1rem;font-size:.88rem" onclick="previewReminder()">🔊 Preview reminder</button>
+    </div>
+
+    <div class="btn-row" style="margin-top:1.4rem">
+      <button class="btn sec" onclick="goTo(1)">⬅️ Back</button>
+      <button class="btn ok" onclick="saveAll()">🎉 Save my plan</button>
     </div>
 
     <div class="confirm-box" id="confirmBox">
-      <div class="big-check">🎉</div>
+      <div class="big">🎉</div>
       <h3>You're all set!</h3>
       <p>Your medicines and reminders have been saved.<br>We will remind you when it is time to take them.</p>
-      <button class="btn success" style="margin-top:1rem" onclick="startAgain()">➕ Add another medicine</button>
+      <button class="btn ok" style="margin-top:.9rem" onclick="startAgain()">➕ Add another medicine</button>
     </div>
   </div>
 </div>
 
 <script>
-  /* ── State ── */
-  const meds = [];
-  let currentPage = 0;
-  const selectedReminders = new Set();
+/* ═══ State ═══ */
+const meds = [];
+const selReminders = new Set();
+let calOff = 0;
+let isSpeaking = false;
+let recog = null;
 
-  /* ── Common medicines for spell-check ── */
-  const knownMeds = [
-    'metformin','lisinopril','amlodipine','atorvastatin','omeprazole','levothyroxine',
-    'ramipril','aspirin','paracetamol','ibuprofen','amoxicillin','sertraline',
-    'citalopram','fluoxetine','bisoprolol','furosemide','prednisolone','warfarin',
-    'lansoprazole','simvastatin','gabapentin','metoprolol','salbutamol','cetirizine',
-    'losartan','carvedilol','duloxetine','venlafaxine','quetiapine','risperidone',
-    'clonazepam','diazepam','codeine','tramadol','morphine','oxycodone',
-    'insulin','doxycycline','azithromycin','clarithromycin','trimethoprim'
-  ];
+/* ═══ Spell check ═══ */
+const knownMeds = [
+  'metformin','lisinopril','amlodipine','atorvastatin','omeprazole','levothyroxine',
+  'ramipril','aspirin','paracetamol','ibuprofen','amoxicillin','sertraline',
+  'citalopram','fluoxetine','bisoprolol','furosemide','prednisolone','warfarin',
+  'lansoprazole','simvastatin','gabapentin','metoprolol','salbutamol','cetirizine',
+  'losartan','carvedilol','duloxetine','venlafaxine','quetiapine','risperidone',
+  'clonazepam','diazepam','codeine','tramadol','morphine','oxycodone',
+  'insulin','doxycycline','azithromycin','clarithromycin','trimethoprim'
+];
+const knownDoses = [
+  '5mg','10mg','20mg','25mg','40mg','50mg','75mg','100mg','150mg','200mg',
+  '250mg','300mg','400mg','500mg','600mg','750mg','1000mg','1g','2g',
+  '0.5mg','2.5mg','1.25mg','2mg','4mg','8mg','12.5mg','37.5mg',
+  '1ml','2ml','5ml','10ml','0.1mg','0.25mg','0.5ml','1.5mg'
+];
 
-  const knownDoses = [
-    '5mg','10mg','20mg','25mg','40mg','50mg','75mg','100mg','150mg','200mg',
-    '250mg','300mg','400mg','500mg','600mg','750mg','1000mg','1g','2g',
-    '0.5mg','2.5mg','1.25mg','2mg','4mg','8mg','12.5mg','37.5mg',
-    '1ml','2ml','5ml','10ml','0.1mg','0.25mg','0.5ml','1.5mg'
-  ];
+function lev(a,b){
+  const m=a.length,n=b.length,dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>j===0?i:0));
+  for(let j=1;j<=n;j++) dp[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+function bestMatch(word,list){
+  word=word.toLowerCase().trim();
+  if(!word||word.length<3) return null;
+  if(list.includes(word)) return null;
+  let best=null,bd=Infinity;
+  for(const w of list){const d=lev(word,w);if(d<bd&&d<=Math.max(2,Math.floor(word.length*.35))){best=w;bd=d;}}
+  return best;
+}
+function chkSpell(inId,warnId,sugId,isDose){
+  const val=document.getElementById(inId).value;
+  const warn=document.getElementById(warnId);
+  const sug=document.getElementById(sugId);
+  const list=isDose?knownDoses:knownMeds;
+  let found=null;
+  for(const w of val.trim().split(/\s+/)){const m=bestMatch(w,list);if(m){found=m;break;}}
+  if(found){sug.textContent=found;warn.classList.add('on');}
+  else warn.classList.remove('on');
+}
 
-  function levenshtein(a, b) {
-    const m = a.length, n = b.length;
-    const dp = Array.from({length: m+1}, (_, i) => Array.from({length: n+1}, (_, j) => j === 0 ? i : 0));
-    for (let j = 1; j <= n; j++) dp[0][j] = j;
-    for (let i = 1; i <= m; i++)
-      for (let j = 1; j <= n; j++)
-        dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
-    return dp[m][n];
-  }
+/* ═══ Method tabs ═══ */
+function showMethod(m){
+  ['chat','type','photo','barcode'].forEach(id=>{
+    document.getElementById('method-'+id).style.display=id===m?'block':'none';
+    document.getElementById('tab-'+id).classList.toggle('active',id===m);
+  });
+  if(m==='chat'&&!chatReady) initChat();
+}
 
-  function bestMatch(word, list) {
-    word = word.toLowerCase().trim();
-    if (!word || word.length < 3) return null;
-    if (list.includes(word)) return null;
-    let best = null, bestDist = Infinity;
-    for (const w of list) {
-      const d = levenshtein(word, w);
-      const threshold = Math.max(2, Math.floor(word.length * 0.35));
-      if (d < bestDist && d <= threshold) { best = w; bestDist = d; }
-    }
-    return best;
-  }
+/* ═══ Meal pills ═══ */
+function toggleMpill(el){ el.classList.toggle('on'); }
+function getSelectedMeals(){ return [...document.querySelectorAll('#mealPills .mpill.on')].map(p=>p.dataset.v); }
 
-  function checkSpelling(inputId, warnId, suggestId) {
-    const val = document.getElementById(inputId).value;
-    const warn = document.getElementById(warnId);
-    const sug = document.getElementById(suggestId);
-    const list = inputId.toLowerCase().includes('dose') ? knownDoses : knownMeds;
-    const words = val.trim().split(/\s+/);
-    let foundSuggestion = null;
-    for (const w of words) {
-      const m = bestMatch(w, list);
-      if (m) { foundSuggestion = m; break; }
-    }
-    if (foundSuggestion) {
-      sug.textContent = foundSuggestion;
-      warn.classList.add('visible');
-    } else {
-      warn.classList.remove('visible');
-    }
-  }
+/* ═══ Default times ═══ */
+const defTimes={once:['08:00'],twice:['08:00','20:00'],three:['08:00','13:00','20:00'],four:['08:00','12:00','17:00','21:00'],weekly:['08:00'],asneeded:[]};
 
-  /* ── Input method switcher ── */
-  function showMethod(m) {
-    ['type','photo','barcode'].forEach(id => {
-      document.getElementById('method-'+id).style.display = id===m ? 'block' : 'none';
-      document.getElementById('m-'+id).classList.toggle('active', id===m);
-    });
-  }
+/* ═══ Push med ═══ */
+function pushMed(m){
+  m.times=[...(defTimes[m.freq]||['08:00'])];
+  meds.push(m);
+  renderMedList();
+}
 
-  /* ── Toggle pill checkboxes ── */
-  function togglePill(el) {
-    el.classList.toggle('checked');
-  }
+function freqLbl(f){return{once:'Once a day',twice:'Twice a day',three:'3× a day',four:'4× a day',weekly:'Once a week',asneeded:'As needed'}[f]||f;}
 
-  /* ── Add medication (manual) ── */
-  function addMedication() {
-    const name = document.getElementById('medName').value.trim();
-    const dose = document.getElementById('medDose').value.trim();
-    const freq = document.getElementById('medFreq').value;
-    if (!name || !dose || !freq) {
-      alert('Please fill in the medicine name, dose, and how often you take it.');
-      return;
-    }
-    const meals = [...document.querySelectorAll('.check-pill.checked')].map(p =>
-      p.querySelector('input').value
-    );
-    const notes = document.getElementById('medNotes').value.trim();
-    meds.push({name, dose, freq, meals, notes, source:'typed'});
-    renderMedList();
-    document.getElementById('medName').value = '';
-    document.getElementById('medDose').value = '';
-    document.getElementById('medFreq').value = '';
-    document.getElementById('medNotes').value = '';
-    document.querySelectorAll('.check-pill.checked').forEach(p => p.classList.remove('checked'));
-    ['medNameWarn','medDoseWarn'].forEach(id => document.getElementById(id).classList.remove('visible'));
-  }
+function renderMedList(){
+  const list=document.getElementById('medList');
+  const card=document.getElementById('medListCard');
+  list.innerHTML='';
+  if(!meds.length){card.style.display='none';return;}
+  card.style.display='block';
+  meds.forEach((m,i)=>{
+    const el=document.createElement('div');
+    el.className='med-item';
+    const ml=m.meals&&m.meals.length?`🍽️ ${m.meals.join(', ')} meal`:'';
+    el.innerHTML=`<button class="xbtn" onclick="removeMed(${i})" aria-label="Remove ${m.name}">✕</button>
+      <div class="mn">💊 ${m.name} — ${m.dose}</div>
+      <div class="md">${freqLbl(m.freq)}${ml?' · '+ml:''}${m.notes?' · '+m.notes:''}</div>`;
+    list.appendChild(el);
+  });
+}
+function removeMed(i){meds.splice(i,1);renderMedList();}
 
-  /* ── Photo handler ── */
-  function handlePhoto(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const img = document.getElementById('photoPreview');
-      img.src = ev.target.result;
-      img.style.display = 'block';
-      document.getElementById('photoResult').style.display = 'block';
-      document.getElementById('photoMedName').value = '';
-      document.getElementById('photoMedDose').value = '';
-    };
-    reader.readAsDataURL(file);
-  }
+/* ═══ Manual add ═══ */
+function addManual(){
+  const name=document.getElementById('mN').value.trim();
+  const dose=document.getElementById('mD').value.trim();
+  const freq=document.getElementById('mF').value;
+  if(!name||!dose||!freq){alert('Please fill in the medicine name, dose, and how often.');return;}
+  pushMed({name,dose,freq,meals:getSelectedMeals(),notes:document.getElementById('mNt').value.trim(),source:'typed'});
+  ['mN','mD','mNt'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mF').value='';
+  document.querySelectorAll('#mealPills .mpill').forEach(p=>p.classList.remove('on'));
+  ['wN','wD'].forEach(id=>document.getElementById(id).classList.remove('on'));
+}
 
-  function addFromPhoto() {
-    const name = document.getElementById('photoMedName').value.trim();
-    const dose = document.getElementById('photoMedDose').value.trim();
-    if (!name || !dose) { alert('Please fill in both medicine name and dose.'); return; }
-    meds.push({name, dose, freq:'once', meals:[], notes:'Added from photo', source:'photo'});
-    renderMedList();
-    document.getElementById('photoResult').style.display = 'none';
-    document.getElementById('photoPreview').style.display = 'none';
-  }
-
-  /* ── Barcode handler ── */
-  function startBarcodeScanner() {
-    document.getElementById('barcodeInput').click();
-  }
-
-  function handleBarcode(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    document.getElementById('barcodeResult').style.display = 'block';
-    document.getElementById('barcodeMedName').value = 'Scanned Medicine';
-    document.getElementById('barcodeMedDose').value = '';
-  }
-
-  function addFromBarcode() {
-    const name = document.getElementById('barcodeMedName').value.trim();
-    const dose = document.getElementById('barcodeMedDose').value.trim();
-    if (!name || !dose) { alert('Please check the medicine name and dose.'); return; }
-    meds.push({name, dose, freq:'once', meals:[], notes:'Added from barcode', source:'barcode'});
-    renderMedList();
-    document.getElementById('barcodeResult').style.display = 'none';
-  }
-
-  /* ── Render medicine list ── */
-  function renderMedList() {
-    const list = document.getElementById('medList');
-    const card = document.getElementById('medListCard');
-    list.innerHTML = '';
-    if (meds.length === 0) { card.style.display = 'none'; return; }
-    card.style.display = 'block';
-    meds.forEach((m, i) => {
-      const el = document.createElement('div');
-      el.className = 'med-item';
-      const mealText = m.meals.length ? `🍽️ ${m.meals.join(', ')} meal` : '';
-      el.innerHTML = `
-        <button class="remove-btn" onclick="removeMed(${i})" aria-label="Remove ${m.name}">✕</button>
-        <div class="med-name">💊 ${m.name} — ${m.dose}</div>
-        <div class="med-detail">${freqLabel(m.freq)} ${mealText ? '· ' + mealText : ''} ${m.notes ? '· ' + m.notes : ''}</div>
-      `;
-      list.appendChild(el);
-    });
-  }
-
-  function removeMed(i) { meds.splice(i, 1); renderMedList(); }
-
-  function freqLabel(f) {
-    return {once:'Once a day',twice:'Twice a day',three:'3× a day',four:'4× a day',weekly:'Once a week',asneeded:'As needed'}[f] || f;
-  }
-
-  /* ── Generate schedule ── */
-  const freqTimes = {
-    once: ['08:00'],
-    twice: ['08:00','20:00'],
-    three: ['08:00','13:00','20:00'],
-    four: ['08:00','12:00','17:00','21:00'],
-    weekly: ['08:00'],
-    asneeded: ['--:--']
+/* ═══ Photo ═══ */
+function handlePhoto(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=document.getElementById('photoPreview');
+    img.src=ev.target.result;img.style.display='block';
+    document.getElementById('photoResult').style.display='block';
+    document.getElementById('pN').value='';
+    document.getElementById('pD').value='';
   };
+  reader.readAsDataURL(file);
+  e.target.value='';
+}
+function addPhoto(){
+  const n=document.getElementById('pN').value.trim();
+  const d=document.getElementById('pD').value.trim();
+  if(!n||!d){alert('Please fill in the medicine name and dose.');return;}
+  pushMed({name:n,dose:d,freq:'once',meals:[],notes:'Added from photo',source:'photo'});
+  document.getElementById('photoResult').style.display='none';
+  document.getElementById('photoPreview').style.display='none';
+}
 
-  function generateSchedule() {
-    const list = document.getElementById('scheduleList');
-    list.innerHTML = '';
-    if (meds.length === 0) {
-      list.innerHTML = '<p style="color:#888">No medicines added yet. Go back and add some!</p>';
+/* ═══ Barcode ═══ */
+function handleBarcode(e){
+  if(!e.target.files[0])return;
+  document.getElementById('bcResult').style.display='block';
+  document.getElementById('bcN').value='';
+  document.getElementById('bcD').value='';
+  e.target.value='';
+}
+function addBarcode(){
+  const n=document.getElementById('bcN').value.trim();
+  const d=document.getElementById('bcD').value.trim();
+  if(!n||!d){alert('Please check the medicine name and dose.');return;}
+  pushMed({name:n,dose:d,freq:'once',meals:[],notes:'Added from barcode',source:'barcode'});
+  document.getElementById('bcResult').style.display='none';
+}
+
+/* ═══ Schedule ═══ */
+function getPeriod(t){
+  const h=parseInt(t);
+  return isNaN(h)?'':h<12?'Morning':h<17?'Afternoon':'Evening';
+}
+function mealTag(meals){
+  if(!meals||!meals.length)return'';
+  const v=meals[0];
+  return`<span class="meal-tag">${v==='with'?'🍽️ with meal':v==='before'?'🌅 before meal':v==='after'?'🌇 after meal':'🤷 any time'}</span>`;
+}
+
+function renderSchedule(){
+  // Chips
+  renderChips('schedChips');
+  const list=document.getElementById('schedList');
+  list.innerHTML='';
+  if(!meds.length){list.innerHTML='<p style="color:#888">No medicines added yet. Go back and add some!</p>';return;}
+
+  meds.forEach((m,mi)=>{
+    if(m.freq==='asneeded'){
+      const d=document.createElement('div');
+      d.className='asneeded-section';
+      d.innerHTML=`<div class="sched-name">💊 ${m.name} — ${m.dose} <span class="meal-tag">As needed</span></div>
+        <div class="sched-notes">${m.notes||'Take when you need it'}</div>`;
+      list.appendChild(d);
       return;
     }
-    const entries = [];
-    meds.forEach(m => {
-      const times = freqTimes[m.freq] || ['08:00'];
-      times.forEach(t => entries.push({...m, time: t}));
-    });
-    entries.sort((a, b) => a.time.localeCompare(b.time));
-    entries.forEach(e => {
-      const mealTag = e.meals.length
-        ? `<span class="meal-tag">${e.meals.includes('with') ? '🍽️ with meal' : e.meals.includes('before') ? '🌅 before meal' : '🌇 after meal'}</span>`
-        : '';
-      const [h] = e.time.split(':');
-      const period = e.time === '--:--' ? 'As needed' : +h < 12 ? 'Morning' : +h < 17 ? 'Afternoon' : 'Evening';
-      const div = document.createElement('div');
-      div.className = 'sched-item';
-      div.innerHTML = `
-        <div class="sched-time">${e.time}<small>${period}</small></div>
-        <div class="sched-info">
-          <div class="sched-name">💊 ${e.name} — ${e.dose} ${mealTag}</div>
-          <div class="sched-notes">${e.notes || ''}</div>
+    m.times.forEach((t,ti)=>{
+      const div=document.createElement('div');
+      div.className='sched-item';
+      div.innerHTML=`
+        <div class="time-col">
+          <input type="time" value="${t}" aria-label="Time for ${m.name}"
+            onchange="updateTime(${mi},${ti},this.value)">
+          <span class="period-lbl" id="per-${mi}-${ti}">${getPeriod(t.split(':')[0])}</span>
+        </div>
+        <div>
+          <div class="sched-name">💊 ${m.name} — ${m.dose} ${mealTag(m.meals)}</div>
+          <div class="sched-notes">${m.notes||''}</div>
         </div>`;
       list.appendChild(div);
     });
-  }
+  });
+  renderCal();
+}
 
-  /* ── Reminder cards ── */
-  function toggleReminder(id) {
-    const el = document.getElementById(id);
-    el.classList.toggle('selected');
-    if (el.classList.contains('selected')) selectedReminders.add(id);
-    else selectedReminders.delete(id);
-    document.getElementById('notifSettings').style.display =
-      (selectedReminders.has('r-notif') || selectedReminders.has('r-alarm')) ? 'block' : 'none';
-    document.getElementById('carerSettings').style.display =
-      selectedReminders.has('r-carer') ? 'block' : 'none';
-    document.getElementById('emailSettings').style.display =
-      selectedReminders.has('r-email') ? 'block' : 'none';
-  }
+function updateTime(mi,ti,val){
+  meds[mi].times[ti]=val;
+  const p=document.getElementById(`per-${mi}-${ti}`);
+  if(p) p.textContent=getPeriod(val.split(':')[0]);
+  renderCal();
+}
 
-  /* ── Navigation ── */
-  function goTo(n) {
-    if (n === 1 && meds.length === 0) {
-      alert('Please add at least one medicine first! 💊');
-      return;
-    }
-    document.querySelectorAll('.page').forEach((p, i) => p.classList.toggle('active', i === n));
-    document.querySelectorAll('.step-btn').forEach((b, i) => {
-      b.classList.remove('active','done');
-      if (i === n) b.classList.add('active');
-      else if (i < n) b.classList.add('done');
+/* ═══ View toggle ═══ */
+function setView(v){
+  document.getElementById('listView').style.display=v==='list'?'block':'none';
+  document.getElementById('calView').style.display=v==='cal'?'block':'none';
+  document.getElementById('vListBtn').classList.toggle('active',v==='list');
+  document.getElementById('vCalBtn').classList.toggle('active',v==='cal');
+  if(v==='cal') renderCal();
+}
+
+/* ═══ Calendar ═══ */
+function moveWeek(d){calOff+=d;renderCal();}
+function renderCal(){
+  const today=new Date();
+  const mon=new Date(today);
+  mon.setDate(today.getDate()-((today.getDay()+6)%7)+calOff*7);
+  const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const sun=new Date(mon.getTime()+6*864e5);
+  document.getElementById('calLabel').textContent=`${mon.getDate()} ${MONTHS[mon.getMonth()]} – ${sun.getDate()} ${MONTHS[sun.getMonth()]}`;
+  const grid=document.getElementById('calGrid');
+  grid.innerHTML='';
+  for(let d=0;d<7;d++){
+    const date=new Date(mon.getTime()+d*864e5);
+    const isToday=date.toDateString()===today.toDateString();
+    const col=document.createElement('div');
+    col.className='cal-day'+(isToday?' today':'');
+    col.innerHTML=`<div class="cal-dlbl">${DAYS[d]}</div><div class="cal-dnum">${date.getDate()}</div>`;
+    const entries=[];
+    meds.forEach(m=>{
+      if(m.freq==='weekly'&&d!==0) return;
+      if(m.freq==='asneeded') return;
+      m.times.forEach(t=>entries.push({t,name:m.name,dose:m.dose}));
     });
-    const fills = [33, 66, 100];
-    document.getElementById('progressFill').style.width = fills[n] + '%';
-    currentPage = n;
-    if (n === 1) generateSchedule();
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    entries.sort((a,b)=>a.t.localeCompare(b.t));
+    entries.forEach(e=>{
+      const chip=document.createElement('div');
+      chip.className='cal-chip';
+      chip.title=`${e.name} ${e.dose} at ${e.t}`;
+      chip.textContent=`${e.t} ${e.name}`;
+      col.appendChild(chip);
+    });
+    grid.appendChild(col);
+  }
+}
+
+/* ═══ Med chips (summary) ═══ */
+function renderChips(containerId){
+  const c=document.getElementById(containerId);
+  c.innerHTML='';
+  if(!meds.length){c.innerHTML='<span style="color:#888;font-size:.88rem">None added yet</span>';return;}
+  meds.forEach(m=>{
+    const chip=document.createElement('div');
+    chip.className='med-chip';
+    chip.textContent=`${m.name} ${m.dose}`;
+    c.appendChild(chip);
+  });
+}
+
+/* ═══ Reminders ═══ */
+function toggleR(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('on');
+  if(el.classList.contains('on')) selReminders.add(id);
+  else selReminders.delete(id);
+  document.getElementById('notifExtra').style.display=
+    (selReminders.has('r-notif')||selReminders.has('r-alarm'))?'block':'none';
+  document.getElementById('contactsExtra').style.display=selReminders.has('r-contacts')?'block':'none';
+  document.getElementById('smsExtra').style.display=selReminders.has('r-sms')?'block':'none';
+}
+
+function medListText(){
+  return meds.map(m=>`${m.name} ${m.dose}`).join(', and ');
+}
+const rMsgs={
+  notif: ()=>`You will get a phone notification that says: Time to take your medicine! ${medListText()}.`,
+  alarm: ()=>`Your alarm will sound and say: It is time for your medicine! ${medListText()}.`,
+  calendar: ()=>`A calendar event will be added: Take your medicine — ${medListText()}.`,
+  contacts: ()=>`Your contacts will be told: It is time to take your medicine: ${medListText()}.`,
+  sms: ()=>`You will receive a text saying: Reminder — time for your medicine: ${medListText()}.`
+};
+function speakR(type){ speak((rMsgs[type]||(() => ''))() ); }
+function previewReminder(){
+  speak(`This is your medicine reminder. It is time to take your medicine. ${medListText()}. Please take your medicine now.`);
+}
+
+/* ═══ TTS ═══ */
+function speak(text){
+  window.speechSynthesis.cancel();
+  if(!text) return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=0.88; u.pitch=1; u.volume=1;
+  u.onstart=()=>{isSpeaking=true;updTTSBtn();};
+  u.onend=u.onerror=()=>{isSpeaking=false;updTTSBtn();};
+  window.speechSynthesis.speak(u);
+}
+function togglePageTTS(){
+  if(isSpeaking){window.speechSynthesis.cancel();isSpeaking=false;updTTSBtn();return;}
+  const pg=document.querySelector('.page.active');
+  if(pg) speak(pg.innerText.replace(/\s+/g,' ').trim());
+}
+function updTTSBtn(){
+  const btn=document.getElementById('ttsFloat');
+  btn.textContent=isSpeaking?'⏹ Stop reading':'🔊 Read page';
+  btn.classList.toggle('speaking',isSpeaking);
+}
+
+/* ═══ Navigation ═══ */
+function goTo(n){
+  if(n===1&&!meds.length){alert('Please add at least one medicine first! 💊');return;}
+  document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.querySelectorAll('.step-btn').forEach((b,i)=>{
+    b.classList.remove('active','done');
+    if(i===n) b.classList.add('active'); else if(i<n) b.classList.add('done');
+  });
+  document.getElementById('pf').style.width=[33,66,100][n]+'%';
+  if(n===1) renderSchedule();
+  if(n===2) renderChips('remindChips');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function saveAll(){
+  if(!selReminders.size){alert('Please choose at least one reminder! 🔔');return;}
+  if('Notification' in window&&selReminders.has('r-notif')) Notification.requestPermission();
+  document.getElementById('confirmBox').classList.add('on');
+  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+  speak('You are all set! Your medicine plan has been saved. We will remind you when it is time to take your medicine.');
+}
+function startAgain(){
+  meds.length=0; selReminders.clear(); calOff=0;
+  renderMedList();
+  document.getElementById('confirmBox').classList.remove('on');
+  document.querySelectorAll('.rcard').forEach(c=>c.classList.remove('on'));
+  chatReady=false; chatMed={}; chatState='NAME';
+  document.getElementById('chatWin').innerHTML='';
+  goTo(0); showMethod('chat'); initChat();
+}
+
+/* ══════════════════════════════════════
+   AI CHATBOT
+══════════════════════════════════════ */
+let chatState='NAME';
+let chatMed={};
+let chatReady=false;
+
+const freqKw={
+  once:['once','once a day','one time a day','every day','daily','1 time'],
+  twice:['twice','twice a day','two times','2 times','twice daily'],
+  three:['three times','3 times','thrice','three times a day','three daily'],
+  four:['four times','4 times','four times a day','every 6 hours'],
+  weekly:['weekly','once a week','every week','one time a week'],
+  asneeded:['as needed','when needed','sometimes','only when','prn','occasionally']
+};
+const mealKw={
+  before:['before meal','before food','before eating','before meals','pre meal'],
+  with:['with meal','with food','with eating','during meal','with meals','with my food'],
+  after:['after meal','after food','after eating','post meal','after meals'],
+  any:["doesn't matter","any time","anytime","no preference","no","doesn't","it doesn't"]
+};
+function parseFreq(t){t=t.toLowerCase();for(const[k,ws]of Object.entries(freqKw))for(const w of ws)if(t.includes(w))return k;return null;}
+function parseMeal(t){t=t.toLowerCase();for(const[k,ws]of Object.entries(mealKw))for(const w of ws)if(t.includes(w))return k;return null;}
+function parseDose(t){const m=t.match(/(\d+\.?\d*\s*(?:mg|ml|g|mcg|iu|units?))/i);return m?m[1].replace(/\s+/,'').toLowerCase():null;}
+function parseName(t){
+  let s=t.replace(/(\d+\.?\d*\s*(?:mg|ml|g|mcg|iu|units?))/gi,'')
+          .replace(/\b(once|twice|three|four|five|daily|weekly|times|a day|per day|as needed|take|i take|my|the|please|it's|i'm|taking|i need|i use|every|each)\b/gi,'')
+          .trim();
+  const words=s.split(/\s+/).filter(w=>w.length>2);
+  for(const w of words){const l=w.toLowerCase();if(knownMeds.includes(l))return l.charAt(0).toUpperCase()+l.slice(1);const bm=bestMatch(l,knownMeds);if(bm)return bm.charAt(0).toUpperCase()+bm.slice(1);}
+  return words[0]?words[0].charAt(0).toUpperCase()+words[0].slice(1):null;
+}
+
+function botSay(text,ms=450){
+  return new Promise(res=>{
+    const win=document.getElementById('chatWin');
+    const t=document.createElement('div');t.className='cb typing';t.textContent='…';
+    win.appendChild(t);win.scrollTop=win.scrollHeight;
+    setTimeout(()=>{
+      t.remove();
+      const b=document.createElement('div');b.className='cb bot';b.textContent=text;
+      win.appendChild(b);win.scrollTop=win.scrollHeight;res();
+    },ms);
+  });
+}
+function userSay(text){
+  const win=document.getElementById('chatWin');
+  const b=document.createElement('div');b.className='cb user';b.textContent=text;
+  win.appendChild(b);win.scrollTop=win.scrollHeight;
+}
+
+async function initChat(){
+  if(chatReady) return;
+  chatReady=true; chatState='NAME'; chatMed={};
+  await botSay('👋 Hello! I am here to help you add your medicine.',250);
+  await botSay('What is the name of your medicine? You can also say a full sentence like "I take Metformin 500mg twice a day".',600);
+}
+
+async function sendChat(){
+  const inp=document.getElementById('chatIn');
+  const text=inp.value.trim();if(!text)return;
+  inp.value='';userSay(text);
+  await processChatInput(text);
+}
+
+async function processChatInput(text){
+  const t=text.toLowerCase().trim();
+
+  if(chatState==='NAME'){
+    const autoName=parseName(text);
+    const autoDose=parseDose(text);
+    const autoFreq=parseFreq(text);
+    const autoMeal=parseMeal(text);
+    if(!autoName){await botSay("Sorry, I didn't catch a medicine name. Could you say the name again? For example: Metformin, Aspirin");return;}
+    const suggestion=bestMatch(autoName.toLowerCase(),knownMeds);
+    if(suggestion&&suggestion.toLowerCase()!==autoName.toLowerCase()){
+      chatMed={_raw:autoName,_sug:suggestion,_dose:autoDose,_freq:autoFreq,_meal:autoMeal};
+      await botSay(`I heard "${autoName}". Did you mean "${suggestion.charAt(0).toUpperCase()+suggestion.slice(1)}"? Please say yes or no, or type the correct name.`);
+      chatState='SPELL_NAME';return;
+    }
+    chatMed.name=autoName;
+    if(autoDose) chatMed.dose=autoDose;
+    if(autoFreq) chatMed.freq=autoFreq;
+    if(autoMeal) chatMed.meals=[autoMeal];
+    await nextQuestion();return;
   }
 
-  /* ── Save / finish ── */
-  function saveAll() {
-    if (selectedReminders.size === 0) {
-      alert('Please choose at least one way to be reminded! 🔔');
-      return;
+  if(chatState==='SPELL_NAME'){
+    if(t==='yes'||t==='yeah'||t==='yep'){
+      const s=chatMed._sug;
+      chatMed={name:s.charAt(0).toUpperCase()+s.slice(1),dose:chatMed._dose,freq:chatMed._freq,meals:chatMed._meal?[chatMed._meal]:[]};
+    } else if(t==='no'||t==='nope'){
+      chatMed={name:chatMed._raw};
+    } else {
+      chatMed={name:text.trim()};
     }
-    if ('Notification' in window && selectedReminders.has('r-notif')) {
-      Notification.requestPermission();
-    }
-    document.getElementById('confirmBox').classList.add('visible');
-    window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+    await nextQuestion();return;
   }
 
-  function startAgain() {
-    meds.length = 0;
-    selectedReminders.clear();
-    renderMedList();
-    document.getElementById('confirmBox').classList.remove('visible');
-    document.querySelectorAll('.reminder-card').forEach(c => c.classList.remove('selected'));
-    goTo(0);
+  if(chatState==='DOSE'){
+    const dose=parseDose(text)||text.trim();
+    const sug=bestMatch(dose.toLowerCase().replace(/\s/g,''),knownDoses);
+    chatMed.dose=dose;
+    if(sug&&sug!==dose.toLowerCase()){
+      chatMed._doseSug=sug;
+      await botSay(`I heard "${dose}". Did you mean "${sug}"? Say yes or no, or type the correct dose.`);
+      chatState='SPELL_DOSE';return;
+    }
+    await nextQuestion();return;
   }
+
+  if(chatState==='SPELL_DOSE'){
+    if(t==='yes'||t==='yeah'||t==='yep') chatMed.dose=chatMed._doseSug;
+    delete chatMed._doseSug;
+    await nextQuestion();return;
+  }
+
+  if(chatState==='FREQ'){
+    const freq=parseFreq(text);
+    if(!freq){await botSay("Sorry, I didn't understand. Please say something like: once a day, twice a day, three times a day, or as needed.");return;}
+    chatMed.freq=freq;await nextQuestion();return;
+  }
+
+  if(chatState==='MEAL'){
+    const meal=parseMeal(text);
+    chatMed.meals=meal&&meal!=='any'?[meal]:[];
+    await nextQuestion();return;
+  }
+
+  if(chatState==='NOTES'){
+    chatMed.notes=(t==='no'||t==='none'||t==='skip'||t==='nothing')?'':text;
+    await showConfirm();return;
+  }
+
+  if(chatState==='CONFIRM'){
+    if(t==='yes'||t==='yeah'||t==='yep'||t==='correct'||t==='right'){
+      const name=chatMed.name;
+      pushMed({...chatMed});
+      chatMed={};
+      await botSay(`✅ ${name} has been added to your list!`);
+      await botSay('Would you like to add another medicine? Say yes or no.');
+      chatState='ANOTHER';
+    } else {
+      await botSay("No problem! Let's start again. What is the medicine name?");
+      chatMed={};chatState='NAME';
+    }
+    return;
+  }
+
+  if(chatState==='ANOTHER'){
+    if(t==='yes'||t==='yeah'||t==='yep'){chatMed={};chatState='NAME';await botSay('What is the name of the next medicine?');}
+    else await botSay('Great! When you are ready, tap "Next: Make my schedule" below. 😊');
+    return;
+  }
+}
+
+async function nextQuestion(){
+  if(!chatMed.dose){
+    await botSay(`Got it — ${chatMed.name}! 👍 What is the dose? For example: 500mg, 10mg, 5ml`);
+    chatState='DOSE';
+  } else if(!chatMed.freq){
+    await botSay(`${chatMed.name} ${chatMed.dose}. How often do you take it? For example: once a day, twice a day, as needed`);
+    chatState='FREQ';
+  } else if(!chatMed.meals){
+    await botSay(`${freqLbl(chatMed.freq)}. Do you take it with food? For example: before meal, with meal, after meal, or it doesn't matter`);
+    chatState='MEAL';
+  } else {
+    await botSay('Any other notes? For example: take with water. Or say "no" to skip.');
+    chatState='NOTES';
+  }
+}
+
+async function showConfirm(){
+  const m=chatMed;
+  const ml=m.meals&&m.meals.length?`Take ${m.meals[0]} meal. `:'';
+  const nt=m.notes?`Notes: ${m.notes}.`:'';
+  await botSay(`Here is what I have:\n💊 ${m.name} — ${m.dose}\n🕐 ${freqLbl(m.freq)}\n${ml}${nt}\nIs that right? Say yes to add it, or no to start again.`);
+  chatState='CONFIRM';
+}
+
+/* ═══ Voice input ═══ */
+function toggleMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Voice input is not supported in your browser. Please try Chrome or Edge.');return;}
+  const btn=document.getElementById('micBtn');
+  if(recog&&recog._on){recog.stop();recog._on=false;btn.classList.remove('rec');btn.textContent='🎤';return;}
+  recog=new SR();
+  recog.lang='en-GB';recog.interimResults=false;recog._on=true;
+  btn.classList.add('rec');btn.textContent='⏹';
+  recog.onresult=e=>{
+    const tr=e.results[0][0].transcript;
+    document.getElementById('chatIn').value=tr;
+    recog._on=false;btn.classList.remove('rec');btn.textContent='🎤';
+    sendChat();
+  };
+  recog.onerror=recog.onend=()=>{recog._on=false;btn.classList.remove('rec');btn.textContent='🎤';};
+  recog.start();
+}
+
+/* ═══ Boot ═══ */
+showMethod('chat');
 </script>
 </body>
 </html>
