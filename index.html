@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>hello world..</title>
+  <title>hello world</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     * {
@@ -14,20 +14,23 @@
 
     body {
       background-color: #ffffff;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 1rem;
     }
 
     h1 {
       font-family: 'Press Start 2P', monospace;
-      font-size: 2rem;
       color: #FFC6C6;
+      font-size: clamp(0.75rem, 4vw, 2rem);
+      text-align: center;
+      word-break: break-word;
     }
   </style>
 </head>
 <body>
-  <h1>hello world..</h1>
+  <h1>hello world</h1>
 </body>
 </html>
