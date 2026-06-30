@@ -3,34 +3,888 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>hello world</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <title>My Medicines</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --pink: #FFC6C6;
+      --pink-dark: #e89f9f;
+      --blue: #C6E0FF;
+      --blue-dark: #7ab3f0;
+      --green: #C6FFD5;
+      --green-dark: #5cb87a;
+      --yellow: #FFF5C6;
+      --yellow-dark: #e6c84a;
+      --purple: #E8C6FF;
+      --text: #333;
+      --radius: 20px;
+      --shadow: 0 4px 16px rgba(0,0,0,0.10);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f7f0ff;
+      min-height: 100vh;
+      color: var(--text);
     }
 
-    body {
-      background-color: #ffffff;
-      min-height: 100vh;
+    /* ── Header ── */
+    .header {
+      background: var(--pink);
+      padding: 1.2rem 1.5rem;
       display: flex;
       align-items: center;
+      gap: 1rem;
+      box-shadow: var(--shadow);
+    }
+    .header-icon { font-size: 2.4rem; }
+    .header h1 {
+      font-size: clamp(1.3rem, 4vw, 2rem);
+      font-weight: 800;
+      color: #7a3a3a;
+    }
+    .header p { font-size: 1rem; color: #7a3a3a; }
+
+    /* ── Step nav ── */
+    .steps {
+      display: flex;
       justify-content: center;
-      padding: 1rem;
+      gap: 0.5rem;
+      padding: 1.2rem 1rem 0;
+      flex-wrap: wrap;
+    }
+    .step-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: #fff;
+      border: 3px solid #ddd;
+      border-radius: 14px;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #888;
+      min-width: 80px;
+      transition: all 0.2s;
+    }
+    .step-btn .step-icon { font-size: 1.6rem; }
+    .step-btn.active {
+      border-color: var(--pink-dark);
+      background: var(--pink);
+      color: #7a3a3a;
+      box-shadow: var(--shadow);
+    }
+    .step-btn.done {
+      border-color: var(--green-dark);
+      background: var(--green);
+      color: #2a6a3a;
     }
 
-    h1 {
-      font-family: 'Press Start 2P', monospace;
-      color: #FFC6C6;
-      font-size: clamp(0.75rem, 4vw, 2rem);
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin: 1.2rem auto;
+      max-width: 680px;
+      width: calc(100% - 2rem);
+    }
+    .card h2 {
+      font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card .subtitle {
+      color: #777;
+      font-size: 0.95rem;
+      margin-bottom: 1.2rem;
+    }
+
+    /* ── Input method buttons ── */
+    .input-methods {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .method-btn {
+      background: var(--blue);
+      border: 3px solid transparent;
+      border-radius: var(--radius);
+      padding: 1.2rem 0.8rem;
+      cursor: pointer;
       text-align: center;
-      word-break: break-word;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #2a4a7a;
+      transition: all 0.2s;
+    }
+    .method-btn .method-icon { font-size: 2.2rem; display: block; margin-bottom: 0.4rem; }
+    .method-btn:hover, .method-btn.active {
+      border-color: var(--blue-dark);
+      background: #a8d0ff;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    /* ── Form fields ── */
+    label {
+      display: block;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.35rem;
+      margin-top: 1rem;
+    }
+    input[type="text"], input[type="number"], input[type="time"], select, textarea {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border: 3px solid #ddd;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      transition: border 0.2s;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--blue-dark);
+    }
+    .spell-warning {
+      display: none;
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      color: #856404;
+    }
+    .spell-warning.visible { display: flex; align-items: flex-start; gap: 0.5rem; }
+
+    /* Checkboxes / toggles */
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .check-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--yellow);
+      border: 3px solid transparent;
+      border-radius: 40px;
+      padding: 0.55rem 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #5a4800;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .check-pill input { display: none; }
+    .check-pill.checked {
+      background: var(--yellow-dark);
+      border-color: #b8940a;
+      color: #fff;
+    }
+    .check-pill .pill-icon { font-size: 1.2rem; }
+
+    /* Medication list */
+    .med-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
+    .med-item {
+      background: var(--yellow);
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      border: 2px solid #e6c84a;
+      position: relative;
+    }
+    .med-item .med-name { font-size: 1.1rem; font-weight: 800; }
+    .med-item .med-detail { font-size: 0.9rem; color: #555; margin-top: 0.2rem; }
+    .med-item .remove-btn {
+      position: absolute;
+      top: 0.7rem;
+      right: 0.8rem;
+      background: #f5c6c6;
+      border: none;
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: #a00;
+      line-height: 1;
+    }
+
+    /* Schedule */
+    .schedule-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+    .sched-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      background: #f0f8ff;
+      border-radius: 14px;
+      padding: 0.9rem 1.1rem;
+      border-left: 6px solid var(--blue-dark);
+    }
+    .sched-time {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #2a4a7a;
+      min-width: 72px;
+      text-align: center;
+    }
+    .sched-time small { display: block; font-size: 0.7rem; font-weight: 600; color: #88a; }
+    .sched-info .sched-name { font-weight: 700; font-size: 1rem; }
+    .sched-info .sched-notes { font-size: 0.88rem; color: #555; margin-top: 2px; }
+    .meal-tag {
+      display: inline-block;
+      background: var(--green);
+      color: #2a6a3a;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-left: 6px;
+    }
+
+    /* Reminder options */
+    .reminder-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .reminder-card {
+      background: var(--purple);
+      border: 3px solid transparent;
+      border-radius: var(--radius);
+      padding: 1.2rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 700;
+      color: #4a1a7a;
+      transition: all 0.2s;
+    }
+    .reminder-card .r-icon { font-size: 2.2rem; display: block; margin-bottom: 0.5rem; }
+    .reminder-card:hover, .reminder-card.selected {
+      border-color: #9a5cd0;
+      background: #d9a8ff;
+      transform: translateY(-2px);
+    }
+    .reminder-card.selected::after {
+      content: '✓';
+      display: block;
+      font-size: 1.4rem;
+      color: #5a0a9a;
+      margin-top: 0.3rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--pink-dark);
+      color: #fff;
+      border: none;
+      border-radius: 40px;
+      padding: 0.85rem 1.8rem;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 1.2rem;
+    }
+    .btn:hover { background: #c87070; transform: translateY(-1px); }
+    .btn.secondary {
+      background: #ddd;
+      color: #555;
+    }
+    .btn.secondary:hover { background: #ccc; }
+    .btn.success { background: var(--green-dark); }
+    .btn.success:hover { background: #48a068; }
+    .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+    /* Photo / barcode area */
+    .upload-area {
+      border: 3px dashed #aad;
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      color: #667;
+      background: #f5f5ff;
+      transition: background 0.2s;
+    }
+    .upload-area:hover { background: #eeeeff; }
+    .upload-area .upload-icon { font-size: 3rem; display: block; margin-bottom: 0.5rem; }
+    #photoInput, #barcodeInput { display: none; }
+    #photoPreview {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    /* Section visibility */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* Spell check highlight */
+    .spell-ok { color: #2a6a3a; }
+    .spell-err { color: #a00; text-decoration: underline wavy red; }
+
+    /* Accessible focus */
+    *:focus-visible { outline: 3px solid #7ab3f0; outline-offset: 2px; }
+
+    /* Big confirm box */
+    .confirm-box {
+      background: var(--green);
+      border: 3px solid var(--green-dark);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      display: none;
+    }
+    .confirm-box.visible { display: block; }
+    .confirm-box .big-check { font-size: 3rem; }
+    .confirm-box h3 { font-size: 1.4rem; color: #1a4a2a; margin: 0.5rem 0; }
+    .confirm-box p { color: #2a6a3a; }
+
+    /* Progress bar */
+    .progress-bar {
+      height: 8px;
+      background: #e0d0f0;
+      border-radius: 8px;
+      margin: 1rem auto;
+      max-width: 680px;
+      width: calc(100% - 2rem);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--pink-dark);
+      border-radius: 8px;
+      transition: width 0.4s;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 1.1rem; }
+      .step-btn { min-width: 68px; padding: 0.5rem 0.6rem; font-size: 0.75rem; }
     }
   </style>
 </head>
 <body>
-  <h1>hello world</h1>
+
+<!-- Header -->
+<div class="header">
+  <span class="header-icon">💊</span>
+  <div>
+    <h1>My Medicines</h1>
+    <p>Your friendly medication reminder</p>
+  </div>
+</div>
+
+<!-- Step navigation -->
+<div class="steps">
+  <button class="step-btn active" onclick="goTo(0)" id="step0">
+    <span class="step-icon">💊</span>Add Medicine
+  </button>
+  <button class="step-btn" onclick="goTo(1)" id="step1">
+    <span class="step-icon">📅</span>Schedule
+  </button>
+  <button class="step-btn" onclick="goTo(2)" id="step2">
+    <span class="step-icon">🔔</span>Reminders
+  </button>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:33%"></div></div>
+
+<!-- ══════════════ PAGE 0: Add Medicine ══════════════ -->
+<div class="page active" id="page0">
+  <div class="card">
+    <h2>💊 Add Your Medicine</h2>
+    <p class="subtitle">How would you like to add your medicine?</p>
+
+    <div class="input-methods">
+      <button class="method-btn active" onclick="showMethod('type')" id="m-type">
+        <span class="method-icon">⌨️</span>Type it in
+      </button>
+      <button class="method-btn" onclick="showMethod('photo')" id="m-photo">
+        <span class="method-icon">📷</span>Take a photo
+      </button>
+      <button class="method-btn" onclick="showMethod('barcode')" id="m-barcode">
+        <span class="method-icon">📦</span>Scan barcode
+      </button>
+    </div>
+
+    <!-- TYPE METHOD -->
+    <div id="method-type">
+      <label for="medName">💊 Medicine name</label>
+      <input type="text" id="medName" placeholder="e.g. Metformin" oninput="checkSpelling('medName','medNameWarn','medNameSuggest')" autocomplete="off">
+      <div class="spell-warning" id="medNameWarn">
+        <span>⚠️</span>
+        <span>Did you mean: <strong id="medNameSuggest"></strong>? Please double-check the spelling.</span>
+      </div>
+
+      <label for="medDose">💉 Dose</label>
+      <input type="text" id="medDose" placeholder="e.g. 500mg" oninput="checkSpelling('medDose','medDoseWarn','medDoseSuggest')" autocomplete="off">
+      <div class="spell-warning" id="medDoseWarn">
+        <span>⚠️</span>
+        <span>Did you mean: <strong id="medDoseSuggest"></strong>? Please double-check this dose.</span>
+      </div>
+
+      <label for="medFreq">🕐 How often?</label>
+      <select id="medFreq">
+        <option value="">-- Choose --</option>
+        <option value="once">Once a day</option>
+        <option value="twice">Twice a day</option>
+        <option value="three">Three times a day</option>
+        <option value="four">Four times a day</option>
+        <option value="weekly">Once a week</option>
+        <option value="asneeded">Only when needed</option>
+      </select>
+
+      <label>🍽️ Should it be taken with food?</label>
+      <div class="checkbox-group">
+        <label class="check-pill" id="pill-before" onclick="togglePill(this)">
+          <input type="checkbox" name="meal" value="before"> <span class="pill-icon">🌅</span> Before meal
+        </label>
+        <label class="check-pill" id="pill-with" onclick="togglePill(this)">
+          <input type="checkbox" name="meal" value="with"> <span class="pill-icon">🍽️</span> With meal
+        </label>
+        <label class="check-pill" id="pill-after" onclick="togglePill(this)">
+          <input type="checkbox" name="meal" value="after"> <span class="pill-icon">🌇</span> After meal
+        </label>
+        <label class="check-pill" id="pill-any" onclick="togglePill(this)">
+          <input type="checkbox" name="meal" value="any"> <span class="pill-icon">🤷</span> Doesn't matter
+        </label>
+      </div>
+
+      <label for="medNotes">📝 Any extra notes? (optional)</label>
+      <textarea id="medNotes" rows="2" placeholder="e.g. Take with a full glass of water"></textarea>
+
+      <div class="btn-row">
+        <button class="btn" onclick="addMedication()">➕ Add this medicine</button>
+      </div>
+    </div>
+
+    <!-- PHOTO METHOD -->
+    <div id="method-photo" style="display:none">
+      <p style="margin-bottom:1rem; color:#555;">Take a photo of your prescription or medicine box and we will try to read the details.</p>
+      <div class="upload-area" onclick="document.getElementById('photoInput').click()">
+        <span class="upload-icon">📷</span>
+        <strong>Tap here to take a photo or choose from your gallery</strong>
+        <p style="margin-top:0.5rem; font-size:0.9rem">We accept JPG, PNG, HEIC</p>
+      </div>
+      <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto(event)">
+      <img id="photoPreview" alt="Your prescription photo">
+      <div id="photoResult" style="margin-top:1rem;display:none">
+        <div class="spell-warning visible" style="display:flex">
+          <span>👆</span>
+          <span>We have read your prescription. Please <strong>check each medicine name and dose carefully</strong> before saving.</span>
+        </div>
+        <label for="photoMedName">💊 Medicine name (from photo)</label>
+        <input type="text" id="photoMedName" oninput="checkSpelling('photoMedName','photoNameWarn','photoNameSuggest')">
+        <div class="spell-warning" id="photoNameWarn">
+          <span>⚠️</span><span>Did you mean: <strong id="photoNameSuggest"></strong>? Please check.</span>
+        </div>
+        <label for="photoMedDose">💉 Dose (from photo)</label>
+        <input type="text" id="photoMedDose" oninput="checkSpelling('photoMedDose','photoDoseWarn','photoDoseSuggest')">
+        <div class="spell-warning" id="photoDoseWarn">
+          <span>⚠️</span><span>Did you mean: <strong id="photoDoseSuggest"></strong>? Please check.</span>
+        </div>
+        <button class="btn" onclick="addFromPhoto()">➕ Add this medicine</button>
+      </div>
+    </div>
+
+    <!-- BARCODE METHOD -->
+    <div id="method-barcode" style="display:none">
+      <p style="margin-bottom:1rem; color:#555;">Point your camera at the barcode on your medicine box.</p>
+      <div class="upload-area" onclick="startBarcodeScanner()">
+        <span class="upload-icon">📦</span>
+        <strong>Tap here to scan the barcode</strong>
+        <p style="margin-top:0.5rem; font-size:0.9rem">Or upload an image of the barcode</p>
+      </div>
+      <input type="file" id="barcodeInput" accept="image/*" capture="environment" onchange="handleBarcode(event)">
+      <div id="barcodeResult" style="margin-top:1rem;display:none">
+        <p style="color:#2a6a3a; font-weight:700; margin-bottom:0.5rem">✅ Barcode scanned! Please check these details:</p>
+        <label for="barcodeMedName">💊 Medicine name</label>
+        <input type="text" id="barcodeMedName" oninput="checkSpelling('barcodeMedName','barcodeNameWarn','barcodeNameSuggest')">
+        <div class="spell-warning" id="barcodeNameWarn">
+          <span>⚠️</span><span>Did you mean: <strong id="barcodeNameSuggest"></strong>? Please check.</span>
+        </div>
+        <label for="barcodeMedDose">💉 Dose</label>
+        <input type="text" id="barcodeMedDose" oninput="checkSpelling('barcodeMedDose','barcodeDoseWarn','barcodeDoseSuggest')">
+        <div class="spell-warning" id="barcodeDoseWarn">
+          <span>⚠️</span><span>Did you mean: <strong id="barcodeDoseSuggest"></strong>? Please check.</span>
+        </div>
+        <button class="btn" onclick="addFromBarcode()">➕ Add this medicine</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Added medicines list -->
+  <div class="card" id="medListCard" style="display:none">
+    <h2>✅ Your Medicines</h2>
+    <p class="subtitle">Tap ✕ to remove a medicine</p>
+    <div class="med-list" id="medList"></div>
+    <div class="btn-row" style="margin-top:1.2rem">
+      <button class="btn success" onclick="goTo(1)">Next: Make my schedule ➡️</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE 1: Schedule ══════════════ -->
+<div class="page" id="page1">
+  <div class="card">
+    <h2>📅 Your Medicine Schedule</h2>
+    <p class="subtitle">Here is when you need to take your medicines each day</p>
+    <div class="schedule-list" id="scheduleList"></div>
+    <div class="btn-row" style="margin-top:1.5rem">
+      <button class="btn secondary" onclick="goTo(0)">⬅️ Back</button>
+      <button class="btn success" onclick="goTo(2)">Next: Set reminders ➡️</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE 2: Reminders ══════════════ -->
+<div class="page" id="page2">
+  <div class="card">
+    <h2>🔔 How should we remind you?</h2>
+    <p class="subtitle">Choose as many reminders as you like</p>
+
+    <div class="reminder-grid">
+      <div class="reminder-card" id="r-notif" onclick="toggleReminder('r-notif')">
+        <span class="r-icon">📱</span>Phone notification
+      </div>
+      <div class="reminder-card" id="r-alarm" onclick="toggleReminder('r-alarm')">
+        <span class="r-icon">⏰</span>Alarm sound
+      </div>
+      <div class="reminder-card" id="r-calendar" onclick="toggleReminder('r-calendar')">
+        <span class="r-icon">📆</span>Calendar event
+      </div>
+      <div class="reminder-card" id="r-email" onclick="toggleReminder('r-email')">
+        <span class="r-icon">✉️</span>Email reminder
+      </div>
+      <div class="reminder-card" id="r-carer" onclick="toggleReminder('r-carer')">
+        <span class="r-icon">👤</span>Tell my carer
+      </div>
+      <div class="reminder-card" id="r-sms" onclick="toggleReminder('r-sms')">
+        <span class="r-icon">💬</span>Text message
+      </div>
+    </div>
+
+    <div id="notifSettings" style="display:none; margin-top:1rem">
+      <label for="reminderLead">⏱️ Remind me how many minutes before?</label>
+      <select id="reminderLead">
+        <option value="5">5 minutes before</option>
+        <option value="10" selected>10 minutes before</option>
+        <option value="15">15 minutes before</option>
+        <option value="30">30 minutes before</option>
+      </select>
+    </div>
+
+    <div id="carerSettings" style="display:none; margin-top:1rem">
+      <label for="carerContact">👤 Carer's name or phone number</label>
+      <input type="text" id="carerContact" placeholder="e.g. Mum – 07700 900000">
+    </div>
+
+    <div id="emailSettings" style="display:none; margin-top:1rem">
+      <label for="emailAddr">✉️ Email address</label>
+      <input type="text" id="emailAddr" placeholder="e.g. yourname@email.com">
+    </div>
+
+    <div class="btn-row" style="margin-top:1.5rem">
+      <button class="btn secondary" onclick="goTo(1)">⬅️ Back</button>
+      <button class="btn success" onclick="saveAll()">🎉 All done! Save my plan</button>
+    </div>
+
+    <div class="confirm-box" id="confirmBox">
+      <div class="big-check">🎉</div>
+      <h3>You're all set!</h3>
+      <p>Your medicines and reminders have been saved.<br>We will remind you when it is time to take them.</p>
+      <button class="btn success" style="margin-top:1rem" onclick="startAgain()">➕ Add another medicine</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── State ── */
+  const meds = [];
+  let currentPage = 0;
+  const selectedReminders = new Set();
+
+  /* ── Common medicines for spell-check ── */
+  const knownMeds = [
+    'metformin','lisinopril','amlodipine','atorvastatin','omeprazole','levothyroxine',
+    'ramipril','aspirin','paracetamol','ibuprofen','amoxicillin','sertraline',
+    'citalopram','fluoxetine','bisoprolol','furosemide','prednisolone','warfarin',
+    'lansoprazole','simvastatin','gabapentin','metoprolol','salbutamol','cetirizine',
+    'losartan','carvedilol','duloxetine','venlafaxine','quetiapine','risperidone',
+    'clonazepam','diazepam','codeine','tramadol','morphine','oxycodone',
+    'insulin','doxycycline','azithromycin','clarithromycin','trimethoprim'
+  ];
+
+  const knownDoses = [
+    '5mg','10mg','20mg','25mg','40mg','50mg','75mg','100mg','150mg','200mg',
+    '250mg','300mg','400mg','500mg','600mg','750mg','1000mg','1g','2g',
+    '0.5mg','2.5mg','1.25mg','2mg','4mg','8mg','12.5mg','37.5mg',
+    '1ml','2ml','5ml','10ml','0.1mg','0.25mg','0.5ml','1.5mg'
+  ];
+
+  function levenshtein(a, b) {
+    const m = a.length, n = b.length;
+    const dp = Array.from({length: m+1}, (_, i) => Array.from({length: n+1}, (_, j) => j === 0 ? i : 0));
+    for (let j = 1; j <= n; j++) dp[0][j] = j;
+    for (let i = 1; i <= m; i++)
+      for (let j = 1; j <= n; j++)
+        dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    return dp[m][n];
+  }
+
+  function bestMatch(word, list) {
+    word = word.toLowerCase().trim();
+    if (!word || word.length < 3) return null;
+    if (list.includes(word)) return null;
+    let best = null, bestDist = Infinity;
+    for (const w of list) {
+      const d = levenshtein(word, w);
+      const threshold = Math.max(2, Math.floor(word.length * 0.35));
+      if (d < bestDist && d <= threshold) { best = w; bestDist = d; }
+    }
+    return best;
+  }
+
+  function checkSpelling(inputId, warnId, suggestId) {
+    const val = document.getElementById(inputId).value;
+    const warn = document.getElementById(warnId);
+    const sug = document.getElementById(suggestId);
+    const list = inputId.toLowerCase().includes('dose') ? knownDoses : knownMeds;
+    const words = val.trim().split(/\s+/);
+    let foundSuggestion = null;
+    for (const w of words) {
+      const m = bestMatch(w, list);
+      if (m) { foundSuggestion = m; break; }
+    }
+    if (foundSuggestion) {
+      sug.textContent = foundSuggestion;
+      warn.classList.add('visible');
+    } else {
+      warn.classList.remove('visible');
+    }
+  }
+
+  /* ── Input method switcher ── */
+  function showMethod(m) {
+    ['type','photo','barcode'].forEach(id => {
+      document.getElementById('method-'+id).style.display = id===m ? 'block' : 'none';
+      document.getElementById('m-'+id).classList.toggle('active', id===m);
+    });
+  }
+
+  /* ── Toggle pill checkboxes ── */
+  function togglePill(el) {
+    el.classList.toggle('checked');
+  }
+
+  /* ── Add medication (manual) ── */
+  function addMedication() {
+    const name = document.getElementById('medName').value.trim();
+    const dose = document.getElementById('medDose').value.trim();
+    const freq = document.getElementById('medFreq').value;
+    if (!name || !dose || !freq) {
+      alert('Please fill in the medicine name, dose, and how often you take it.');
+      return;
+    }
+    const meals = [...document.querySelectorAll('.check-pill.checked')].map(p =>
+      p.querySelector('input').value
+    );
+    const notes = document.getElementById('medNotes').value.trim();
+    meds.push({name, dose, freq, meals, notes, source:'typed'});
+    renderMedList();
+    document.getElementById('medName').value = '';
+    document.getElementById('medDose').value = '';
+    document.getElementById('medFreq').value = '';
+    document.getElementById('medNotes').value = '';
+    document.querySelectorAll('.check-pill.checked').forEach(p => p.classList.remove('checked'));
+    ['medNameWarn','medDoseWarn'].forEach(id => document.getElementById(id).classList.remove('visible'));
+  }
+
+  /* ── Photo handler ── */
+  function handlePhoto(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = document.getElementById('photoPreview');
+      img.src = ev.target.result;
+      img.style.display = 'block';
+      document.getElementById('photoResult').style.display = 'block';
+      document.getElementById('photoMedName').value = '';
+      document.getElementById('photoMedDose').value = '';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function addFromPhoto() {
+    const name = document.getElementById('photoMedName').value.trim();
+    const dose = document.getElementById('photoMedDose').value.trim();
+    if (!name || !dose) { alert('Please fill in both medicine name and dose.'); return; }
+    meds.push({name, dose, freq:'once', meals:[], notes:'Added from photo', source:'photo'});
+    renderMedList();
+    document.getElementById('photoResult').style.display = 'none';
+    document.getElementById('photoPreview').style.display = 'none';
+  }
+
+  /* ── Barcode handler ── */
+  function startBarcodeScanner() {
+    document.getElementById('barcodeInput').click();
+  }
+
+  function handleBarcode(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    document.getElementById('barcodeResult').style.display = 'block';
+    document.getElementById('barcodeMedName').value = 'Scanned Medicine';
+    document.getElementById('barcodeMedDose').value = '';
+  }
+
+  function addFromBarcode() {
+    const name = document.getElementById('barcodeMedName').value.trim();
+    const dose = document.getElementById('barcodeMedDose').value.trim();
+    if (!name || !dose) { alert('Please check the medicine name and dose.'); return; }
+    meds.push({name, dose, freq:'once', meals:[], notes:'Added from barcode', source:'barcode'});
+    renderMedList();
+    document.getElementById('barcodeResult').style.display = 'none';
+  }
+
+  /* ── Render medicine list ── */
+  function renderMedList() {
+    const list = document.getElementById('medList');
+    const card = document.getElementById('medListCard');
+    list.innerHTML = '';
+    if (meds.length === 0) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    meds.forEach((m, i) => {
+      const el = document.createElement('div');
+      el.className = 'med-item';
+      const mealText = m.meals.length ? `🍽️ ${m.meals.join(', ')} meal` : '';
+      el.innerHTML = `
+        <button class="remove-btn" onclick="removeMed(${i})" aria-label="Remove ${m.name}">✕</button>
+        <div class="med-name">💊 ${m.name} — ${m.dose}</div>
+        <div class="med-detail">${freqLabel(m.freq)} ${mealText ? '· ' + mealText : ''} ${m.notes ? '· ' + m.notes : ''}</div>
+      `;
+      list.appendChild(el);
+    });
+  }
+
+  function removeMed(i) { meds.splice(i, 1); renderMedList(); }
+
+  function freqLabel(f) {
+    return {once:'Once a day',twice:'Twice a day',three:'3× a day',four:'4× a day',weekly:'Once a week',asneeded:'As needed'}[f] || f;
+  }
+
+  /* ── Generate schedule ── */
+  const freqTimes = {
+    once: ['08:00'],
+    twice: ['08:00','20:00'],
+    three: ['08:00','13:00','20:00'],
+    four: ['08:00','12:00','17:00','21:00'],
+    weekly: ['08:00'],
+    asneeded: ['--:--']
+  };
+
+  function generateSchedule() {
+    const list = document.getElementById('scheduleList');
+    list.innerHTML = '';
+    if (meds.length === 0) {
+      list.innerHTML = '<p style="color:#888">No medicines added yet. Go back and add some!</p>';
+      return;
+    }
+    const entries = [];
+    meds.forEach(m => {
+      const times = freqTimes[m.freq] || ['08:00'];
+      times.forEach(t => entries.push({...m, time: t}));
+    });
+    entries.sort((a, b) => a.time.localeCompare(b.time));
+    entries.forEach(e => {
+      const mealTag = e.meals.length
+        ? `<span class="meal-tag">${e.meals.includes('with') ? '🍽️ with meal' : e.meals.includes('before') ? '🌅 before meal' : '🌇 after meal'}</span>`
+        : '';
+      const [h] = e.time.split(':');
+      const period = e.time === '--:--' ? 'As needed' : +h < 12 ? 'Morning' : +h < 17 ? 'Afternoon' : 'Evening';
+      const div = document.createElement('div');
+      div.className = 'sched-item';
+      div.innerHTML = `
+        <div class="sched-time">${e.time}<small>${period}</small></div>
+        <div class="sched-info">
+          <div class="sched-name">💊 ${e.name} — ${e.dose} ${mealTag}</div>
+          <div class="sched-notes">${e.notes || ''}</div>
+        </div>`;
+      list.appendChild(div);
+    });
+  }
+
+  /* ── Reminder cards ── */
+  function toggleReminder(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('selected');
+    if (el.classList.contains('selected')) selectedReminders.add(id);
+    else selectedReminders.delete(id);
+    document.getElementById('notifSettings').style.display =
+      (selectedReminders.has('r-notif') || selectedReminders.has('r-alarm')) ? 'block' : 'none';
+    document.getElementById('carerSettings').style.display =
+      selectedReminders.has('r-carer') ? 'block' : 'none';
+    document.getElementById('emailSettings').style.display =
+      selectedReminders.has('r-email') ? 'block' : 'none';
+  }
+
+  /* ── Navigation ── */
+  function goTo(n) {
+    if (n === 1 && meds.length === 0) {
+      alert('Please add at least one medicine first! 💊');
+      return;
+    }
+    document.querySelectorAll('.page').forEach((p, i) => p.classList.toggle('active', i === n));
+    document.querySelectorAll('.step-btn').forEach((b, i) => {
+      b.classList.remove('active','done');
+      if (i === n) b.classList.add('active');
+      else if (i < n) b.classList.add('done');
+    });
+    const fills = [33, 66, 100];
+    document.getElementById('progressFill').style.width = fills[n] + '%';
+    currentPage = n;
+    if (n === 1) generateSchedule();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  /* ── Save / finish ── */
+  function saveAll() {
+    if (selectedReminders.size === 0) {
+      alert('Please choose at least one way to be reminded! 🔔');
+      return;
+    }
+    if ('Notification' in window && selectedReminders.has('r-notif')) {
+      Notification.requestPermission();
+    }
+    document.getElementById('confirmBox').classList.add('visible');
+    window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+  }
+
+  function startAgain() {
+    meds.length = 0;
+    selectedReminders.clear();
+    renderMedList();
+    document.getElementById('confirmBox').classList.remove('visible');
+    document.querySelectorAll('.reminder-card').forEach(c => c.classList.remove('selected'));
+    goTo(0);
+  }
+</script>
 </body>
 </html>
