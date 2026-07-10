@@ -2,6 +2,12 @@
 
 A web-based medication reminder tool built for people with learning difficulties.
 
+## Try it live
+
+Scan the QR code or open the link on any phone or computer — no installation needed.
+
+<img src="QRcode.png" alt="QR code to open the live tool" width="200">
+
 ---
 
 ## Background
