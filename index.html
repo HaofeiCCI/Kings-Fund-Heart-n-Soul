@@ -115,12 +115,19 @@
 
     /* ── Schedule list ── */
     .sched-list { display:flex; flex-direction:column; gap:.6rem; }
-    .sched-item { display:flex; align-items:flex-start; gap:.8rem; background:var(--bl); border-radius:11px; padding:.78rem .9rem; border-left:4px solid var(--b); }
-    .time-col { display:flex; flex-direction:column; align-items:center; min-width:86px; }
-    .time-col input[type=time] { font-size:.97rem; font-weight:800; color:var(--b); border:2px solid var(--br); border-radius:8px; padding:.24rem .35rem; width:86px; text-align:center; font-family:inherit; background:var(--w); }
-    .period-lbl { font-size:.63rem; font-weight:600; color:var(--m); margin-top:2px; }
-    .sched-name { font-weight:700; font-size:.93rem; }
-    .sched-notes { font-size:.81rem; color:var(--m); margin-top:2px; }
+    .sched-item { display:flex; align-items:flex-start; gap:.8rem; background:var(--bg); border-radius:11px; padding:.78rem .9rem; border-left:4px solid var(--br); }
+    .time-col { display:flex; flex-direction:column; align-items:center; min-width:100px; }
+    .time-picker { display:flex; align-items:center; gap:2px; }
+    .tp-h,.tp-m,.tp-p { border:2px solid var(--br); border-radius:7px; padding:.22rem .15rem; background:var(--w); font-family:inherit; font-weight:800; font-size:.82rem; cursor:pointer; color:var(--t); }
+    .tp-h { width:34px; text-align:center; }
+    .tp-m { width:36px; text-align:center; }
+    .tp-p { width:42px; }
+    .tp-h:focus,.tp-m:focus,.tp-p:focus { border-color:var(--b); outline:none; color:var(--b); }
+    .tp-sep { font-weight:900; color:var(--m); font-size:.86rem; }
+    .period-lbl { font-size:.63rem; font-weight:600; color:var(--m); margin-top:3px; }
+    .sched-name { font-weight:800; font-size:.93rem; }
+    .sched-dose { font-size:.82rem; color:var(--b); font-weight:700; margin-top:2px; }
+    .sched-notes { font-size:.81rem; color:var(--m); margin-top:3px; }
     .meal-tag { display:inline-block; background:var(--gl); color:#166534; border-radius:20px; padding:1px 8px; font-size:.74rem; font-weight:700; margin-left:4px; }
     .asneeded-section { background:var(--bg); border-radius:11px; padding:.78rem .9rem; border-left:4px solid var(--br); margin-top:.6rem; }
 
@@ -204,11 +211,12 @@
     .period-block { margin-bottom:1rem; }
     .period-header { display:flex; align-items:center; gap:.42rem; font-size:.92rem; font-weight:800; color:var(--m); margin-bottom:.52rem; padding-bottom:.28rem; border-bottom:1.5px solid var(--br); }
 
-    .day-entry { display:flex; align-items:flex-start; gap:.75rem; padding:.62rem .82rem; border-radius:10px; margin-bottom:.38rem; border-left:4px solid var(--br); }
-    .day-time { font-size:.97rem; font-weight:900; min-width:46px; color:var(--t); line-height:1.2; }
-    .day-time small { display:block; font-size:.6rem; font-weight:600; color:var(--m); }
-    .day-med-name { font-weight:800; font-size:.91rem; }
+    .day-entry { display:flex; align-items:flex-start; gap:.75rem; padding:.65rem .82rem; border-radius:10px; margin-bottom:.38rem; border-left:4px solid var(--br); }
+    .day-time { font-size:.95rem; font-weight:900; min-width:54px; color:var(--t); line-height:1.15; white-space:nowrap; }
+    .day-med-name { font-weight:800; font-size:.93rem; }
+    .day-med-dose { font-size:.82rem; color:var(--b); font-weight:700; margin-top:2px; }
     .day-med-detail { font-size:.79rem; color:var(--m); margin-top:2px; }
+    .legend-dose { color:var(--m); font-weight:400; }
     .day-badge { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:3px; vertical-align:middle; }
 
     .week-plan-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:.82rem; }
@@ -216,12 +224,16 @@
     .week-plan-nav h3 { font-size:.88rem; color:var(--m); }
 
     .week-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:.28rem; }
-    .wday { background:var(--bg); border-radius:9px; padding:.35rem .2rem; min-height:100px; border:1.5px solid var(--br); }
+    .wday { background:var(--bg); border-radius:9px; padding:.3rem .18rem; min-height:88px; border:1.5px solid var(--br); }
     .wday.today { border-color:var(--c); background:var(--cl); }
-    .wday-lbl { font-size:.59rem; font-weight:700; text-align:center; color:var(--m); }
-    .wday-num { font-size:.88rem; font-weight:800; text-align:center; margin-bottom:.28rem; }
+    .wday-lbl { font-size:.58rem; font-weight:700; text-align:center; color:var(--m); }
+    .wday-num { font-size:.86rem; font-weight:800; text-align:center; margin-bottom:.22rem; }
     .wday.today .wday-num { color:var(--cd); }
-    .wchip { border-radius:4px; padding:2px 3px; font-size:.56rem; font-weight:700; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer; }
+    .wdot-section { padding:.08rem .15rem; min-height:18px; }
+    .wdot-section-lbl { font-size:.48rem; font-weight:700; color:var(--m); text-transform:uppercase; letter-spacing:.03em; margin-bottom:2px; }
+    .wdot-divider { border:none; border-top:1px solid var(--br); margin:.15rem 0; }
+    .wdot-row { display:flex; flex-wrap:wrap; gap:2px; min-height:10px; }
+    .wdot { width:9px; height:9px; border-radius:50%; flex-shrink:0; cursor:pointer; }
     .asneeded-week { margin-top:.82rem; }
     .asneeded-week h4 { font-size:.84rem; color:var(--m); margin-bottom:.38rem; }
     .asneeded-row { display:flex; align-items:center; gap:.42rem; background:var(--bg); border-radius:9px; padding:.52rem .72rem; margin-bottom:.32rem; border-left:3px solid var(--br); font-size:.84rem; }
@@ -229,11 +241,27 @@
     .empty-plan { text-align:center; padding:2rem 1rem; color:var(--m); }
     .empty-plan .ep-icon { font-size:2.6rem; display:block; margin-bottom:.48rem; }
 
+    /* ── Month plan ── */
+    .month-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:.82rem; }
+    .month-nav button { background:var(--cl); border:2px solid var(--c); border-radius:9px; padding:.38rem .78rem; font-size:.86rem; cursor:pointer; font-weight:700; color:var(--cd); }
+    .month-nav h3 { font-size:.88rem; color:var(--m); }
+    .month-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:.22rem; }
+    .month-day-hdr { font-size:.58rem; font-weight:700; text-align:center; color:var(--m); padding:.18rem 0; }
+    .month-day { background:var(--bg); border-radius:7px; padding:.2rem .12rem; min-height:48px; border:1.5px solid var(--br); }
+    .month-day.today { border-color:var(--c); background:var(--cl); }
+    .month-day.other-month { opacity:.35; }
+    .month-day-num { font-size:.72rem; font-weight:800; text-align:center; margin-bottom:.12rem; }
+    .month-day.today .month-day-num { color:var(--cd); }
+    .month-dots { display:flex; flex-wrap:wrap; gap:2px; justify-content:center; padding:0 .08rem; }
+    .month-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; cursor:pointer; }
+
     @media(max-width:480px){
       .card{padding:.95rem;} .method-tabs{grid-template-columns:repeat(2,1fr);}
       .step-btn{min-width:58px;padding:.38rem .42rem;font-size:.7rem;}
       .photo-btns{grid-template-columns:1fr 1fr;}
-      .wchip{font-size:.51rem;} .week-grid{gap:.2rem;}
+      .week-grid{gap:.2rem;} .month-grid{gap:.14rem;}
+      .month-day{min-height:38px;} .month-dot{width:6px;height:6px;}
+      .tp-h{width:30px;} .tp-m{width:32px;} .tp-p{width:38px;font-size:.76rem;}
     }
   </style>
 </head>
@@ -312,6 +340,17 @@
         <div class="mpill" data-v="any"    onclick="toggleMpill(this)"><span class="pi">🤷</span>Doesn't matter</div>
       </div>
 
+      <label for="mDur">📅 How many days will you take this?</label>
+      <select id="mDur">
+        <option value="ongoing" selected>Ongoing (no end date)</option>
+        <option value="7">7 days (1 week)</option>
+        <option value="14">14 days (2 weeks)</option>
+        <option value="28">28 days (4 weeks)</option>
+        <option value="30">30 days (1 month)</option>
+        <option value="60">60 days (2 months)</option>
+        <option value="90">90 days (3 months)</option>
+      </select>
+
       <label for="mNt">📝 Extra notes (optional)</label>
       <textarea id="mNt" rows="2" placeholder="e.g. Take with a full glass of water"></textarea>
 
@@ -377,6 +416,17 @@
             <div class="mpill" data-v="any"    onclick="toggleMpill(this)"><span class="pi">🤷</span>Doesn't matter</div>
           </div>
 
+          <label for="pDur">📅 How many days will you take this?</label>
+          <select id="pDur">
+            <option value="ongoing" selected>Ongoing (no end date)</option>
+            <option value="7">7 days (1 week)</option>
+            <option value="14">14 days (2 weeks)</option>
+            <option value="28">28 days (4 weeks)</option>
+            <option value="30">30 days (1 month)</option>
+            <option value="60">60 days (2 months)</option>
+            <option value="90">90 days (3 months)</option>
+          </select>
+
           <label for="pNotes">📝 Extra notes (optional)</label>
           <textarea id="pNotes" rows="2" placeholder="e.g. Take with a full glass of water"></textarea>
 
@@ -407,6 +457,13 @@
         <label for="bcD">💉 Dose</label>
         <input type="text" id="bcD" oninput="chkSpell('bcD','wbcD','sbcD',true)">
         <div class="spell-warn" id="wbcD"><span>⚠️</span><span>Did you mean: <strong id="sbcD"></strong>?</span></div>
+        <label for="bcDur">📅 How many days?</label>
+        <select id="bcDur">
+          <option value="ongoing" selected>Ongoing (no end date)</option>
+          <option value="7">7 days</option><option value="14">14 days</option>
+          <option value="28">28 days</option><option value="30">30 days</option>
+          <option value="90">90 days</option>
+        </select>
         <button class="btn" onclick="addBarcode()">➕ Add this medicine</button>
       </div>
     </div>
@@ -554,10 +611,11 @@
     <!-- Colour legend -->
     <div class="legend" id="planLegend"></div>
 
-    <!-- Day / Week toggle -->
+    <!-- Day / Week / Month toggle -->
     <div class="plan-tog">
-      <button class="plan-btn active" id="pDayBtn" onclick="setPlanView('day')">📅 Today's plan</button>
-      <button class="plan-btn" id="pWeekBtn" onclick="setPlanView('week')">📆 Weekly plan</button>
+      <button class="plan-btn active" id="pDayBtn" onclick="setPlanView('day')">📅 Today</button>
+      <button class="plan-btn" id="pWeekBtn" onclick="setPlanView('week')">📆 Week</button>
+      <button class="plan-btn" id="pMonthBtn" onclick="setPlanView('month')">🗓️ Month</button>
     </div>
 
     <!-- ── Daily view ── -->
@@ -581,6 +639,17 @@
       <div class="asneeded-week" id="asneededWeek"></div>
     </div>
 
+    <!-- ── Monthly view ── -->
+    <div id="planMonthView" style="display:none">
+      <div class="month-nav">
+        <button onclick="movePlanMonth(-1)">◀</button>
+        <h3 id="monthPlanLabel"></h3>
+        <button onclick="movePlanMonth(1)">▶</button>
+      </div>
+      <div class="month-grid" id="monthPlanGrid"></div>
+      <div class="asneeded-week" id="asneededMonth" style="margin-top:.82rem"></div>
+    </div>
+
     <div class="btn-row" style="margin-top:1.4rem">
       <button class="btn sec" onclick="goTo(2)">⬅️ Back</button>
       <button class="btn sec" onclick="startAgain()">➕ Add another medicine</button>
@@ -595,12 +664,19 @@ const selReminders = new Set();
 let calOff = 0;
 let dayOff = 0;
 let planWeekOff = 0;
+let planMonthOff = 0;
 let isSpeaking = false;
 let recog = null;
 
 const MED_COLORS = [
-  '#ffb3b3','#a8d4ff','#b3f0c8','#ffe8a0','#d4b3ff','#ffd4a0','#a0f0f0',
-  '#ffb3d4','#c8e8a0','#a0c8ff'
+  '#E05555',  /* coral red    */
+  '#4A86C8',  /* slate blue   */
+  '#2AA876',  /* emerald      */
+  '#D4820A',  /* amber        */
+  '#7055C8',  /* violet       */
+  '#20A0A8',  /* teal         */
+  '#C85570',  /* rose         */
+  '#8B7730',  /* gold         */
 ];
 let colorIdx = 0;
 
@@ -683,9 +759,10 @@ function renderMedList(){
     const el=document.createElement('div');
     el.className='med-item';
     const ml=m.meals&&m.meals.length?`🍽️ ${m.meals.join(', ')} meal`:'';
+    const durTxt=m.duration&&m.duration!=='ongoing'?`📅 ${m.duration} days`:'📅 Ongoing';
     el.innerHTML=`<button class="xbtn" onclick="removeMed(${i})" aria-label="Remove ${m.name}">✕</button>
-      <div class="mn">💊 ${m.name} — ${m.dose}</div>
-      <div class="md">${freqLbl(m.freq)}${ml?' · '+ml:''}${m.notes?' · '+m.notes:''}</div>`;
+      <div class="mn" style="border-left:3px solid ${m.color};padding-left:.5rem">💊 ${m.name}</div>
+      <div class="md" style="padding-left:.5rem">${m.dose} · ${freqLbl(m.freq)} · ${durTxt}${ml?' · '+ml:''}${m.notes?' · '+m.notes:''}</div>`;
     list.appendChild(el);
   });
 }
@@ -697,9 +774,11 @@ function addManual(){
   const dose=document.getElementById('mD').value.trim();
   const freq=document.getElementById('mF').value;
   if(!name||!dose||!freq){alert('Please fill in the medicine name, dose, and how often.');return;}
-  pushMed({name,dose,freq,meals:getSelectedMeals(),notes:document.getElementById('mNt').value.trim(),source:'typed'});
+  const duration=document.getElementById('mDur').value;
+  pushMed({name,dose,freq,duration,meals:getSelectedMeals(),notes:document.getElementById('mNt').value.trim(),source:'typed'});
   ['mN','mD','mNt'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('mF').value='';
+  document.getElementById('mDur').value='ongoing';
   document.querySelectorAll('#mealPills .mpill').forEach(p=>p.classList.remove('on'));
   ['wN','wD'].forEach(id=>document.getElementById(id).classList.remove('on'));
 }
@@ -800,9 +879,10 @@ function addPhoto(){
   const d=document.getElementById('pD').value.trim();
   if(!n||!d){alert('Please fill in the medicine name and dose.');return;}
   const freq=document.getElementById('pF').value||'once';
+  const duration=document.getElementById('pDur').value;
   const meals=[...document.querySelectorAll('#mealPillsPhoto .mpill.on')].map(p=>p.dataset.v);
   const notes=document.getElementById('pNotes').value.trim();
-  pushMed({name:n,dose:d,freq,meals,notes,source:'photo'});
+  pushMed({name:n,dose:d,freq,duration,meals,notes,source:'photo'});
   // Reset UI
   document.getElementById('photoResult').style.display='none';
   document.getElementById('photoPreview').style.display='none';
@@ -824,14 +904,40 @@ function addBarcode(){
   const n=document.getElementById('bcN').value.trim();
   const d=document.getElementById('bcD').value.trim();
   if(!n||!d){alert('Please check the medicine name and dose.');return;}
-  pushMed({name:n,dose:d,freq:'once',meals:[],notes:'Added from barcode',source:'barcode'});
+  const dur=document.getElementById('bcDur').value;
+  pushMed({name:n,dose:d,freq:'once',duration:dur,meals:[],notes:'Added from barcode',source:'barcode'});
   document.getElementById('bcResult').style.display='none';
 }
 
-/* ═══ Schedule ═══ */
+/* ═══ Schedule helpers ═══ */
 function getPeriod(t){
   const h=parseInt(t);
   return isNaN(h)?'':h<12?'Morning':h<17?'Afternoon':'Evening';
+}
+function formatTime12(t){
+  const[h,m]=t.split(':').map(Number);
+  const p=h<12?'AM':'PM';
+  const h12=h%12||12;
+  return`${h12}:${String(m).padStart(2,'0')} ${p}`;
+}
+function makeTimePicker(mi,ti,val){
+  const[hh,mm]=val.split(':');
+  const h24=parseInt(hh); const min=mm;
+  const period=h24<12?'AM':'PM';
+  const h12=h24%12||12;
+  let hOpts='';
+  for(let i=1;i<=12;i++) hOpts+=`<option value="${i}"${i===h12?' selected':''}>${i}</option>`;
+  const minOpts=['00','15','30','45'].map(m=>`<option value="${m}"${m===min?' selected':''}>${m}</option>`).join('');
+  return`<div class="time-picker" data-mi="${mi}" data-ti="${ti}"><select class="tp-h" onchange="updateTimePicker(${mi},${ti})">${hOpts}</select><span class="tp-sep">:</span><select class="tp-m" onchange="updateTimePicker(${mi},${ti})">${minOpts}</select><select class="tp-p" onchange="updateTimePicker(${mi},${ti})"><option value="AM"${period==='AM'?' selected':''}>AM</option><option value="PM"${period==='PM'?' selected':''}>PM</option></select></div>`;
+}
+function updateTimePicker(mi,ti){
+  const picker=document.querySelector(`.time-picker[data-mi="${mi}"][data-ti="${ti}"]`);
+  if(!picker) return;
+  const h=parseInt(picker.querySelector('.tp-h').value);
+  const m=picker.querySelector('.tp-m').value;
+  const p=picker.querySelector('.tp-p').value;
+  let h24=h%12; if(p==='PM') h24+=12;
+  updateTime(mi,ti,`${String(h24).padStart(2,'0')}:${m}`);
 }
 function mealTag(meals){
   if(!meals||!meals.length)return'';
@@ -850,23 +956,30 @@ function renderSchedule(){
     if(m.freq==='asneeded'){
       const d=document.createElement('div');
       d.className='asneeded-section';
-      d.innerHTML=`<div class="sched-name">💊 ${m.name} — ${m.dose} <span class="meal-tag">As needed</span></div>
-        <div class="sched-notes">${m.notes||'Take when you need it'}</div>`;
+      d.style.borderLeftColor=m.color;
+      d.style.background=m.color+'18';
+      const durTxt=m.duration&&m.duration!=='ongoing'?`📅 ${m.duration} days`:'📅 Ongoing';
+      d.innerHTML=`<div class="sched-name">💊 ${m.name}</div>
+        <div class="sched-dose">${m.dose} <span class="meal-tag">As needed</span></div>
+        <div class="sched-notes">${durTxt}${m.notes?' · '+m.notes:''}</div>`;
       list.appendChild(d);
       return;
     }
     m.times.forEach((t,ti)=>{
       const div=document.createElement('div');
       div.className='sched-item';
+      div.style.borderLeftColor=m.color;
+      div.style.background=m.color+'18';
+      const durTxt=m.duration&&m.duration!=='ongoing'?`📅 ${m.duration} days`:'📅 Ongoing';
       div.innerHTML=`
         <div class="time-col">
-          <input type="time" value="${t}" aria-label="Time for ${m.name}"
-            onchange="updateTime(${mi},${ti},this.value)">
+          ${makeTimePicker(mi,ti,t)}
           <span class="period-lbl" id="per-${mi}-${ti}">${getPeriod(t.split(':')[0])}</span>
         </div>
-        <div>
-          <div class="sched-name">💊 ${m.name} — ${m.dose} ${mealTag(m.meals)}</div>
-          <div class="sched-notes">${m.notes||''}</div>
+        <div style="flex:1">
+          <div class="sched-name">💊 ${m.name}</div>
+          <div class="sched-dose">${m.dose} ${mealTag(m.meals)}</div>
+          <div class="sched-notes">${durTxt}${m.notes?' · '+m.notes:''}</div>
         </div>`;
       list.appendChild(div);
     });
@@ -879,6 +992,7 @@ function updateTime(mi,ti,val){
   const p=document.getElementById(`per-${mi}-${ti}`);
   if(p) p.textContent=getPeriod(val.split(':')[0]);
   renderCal();
+  renderWeekPlan();
 }
 
 /* ═══ View toggle ═══ */
@@ -912,16 +1026,23 @@ function renderCal(){
     meds.forEach(m=>{
       if(m.freq==='weekly'&&d!==0) return;
       if(m.freq==='asneeded') return;
-      m.times.forEach(t=>entries.push({t,name:m.name,dose:m.dose}));
+      m.times.forEach(t=>entries.push({t,m}));
     });
     entries.sort((a,b)=>a.t.localeCompare(b.t));
-    entries.forEach(e=>{
-      const chip=document.createElement('div');
-      chip.className='cal-chip';
-      chip.title=`${e.name} ${e.dose} at ${e.t}`;
-      chip.textContent=`${e.t} ${e.name}`;
-      col.appendChild(chip);
-    });
+    const amE=entries.filter(({t})=>parseInt(t.split(':')[0])<12);
+    const pmE=entries.filter(({t})=>parseInt(t.split(':')[0])>=12);
+    const amS=document.createElement('div');amS.className='wdot-section';
+    amS.innerHTML='<div class="wdot-section-lbl">AM</div>';
+    const amR=document.createElement('div');amR.className='wdot-row';
+    amE.forEach(({t,m})=>{const d=document.createElement('span');d.className='wdot';d.style.background=m.color;d.title=`${m.name} ${m.dose} at ${formatTime12(t)}`;amR.appendChild(d);});
+    amS.appendChild(amR);
+    const hr=document.createElement('hr');hr.className='wdot-divider';
+    const pmS=document.createElement('div');pmS.className='wdot-section';
+    pmS.innerHTML='<div class="wdot-section-lbl">PM</div>';
+    const pmR=document.createElement('div');pmR.className='wdot-row';
+    pmE.forEach(({t,m})=>{const d=document.createElement('span');d.className='wdot';d.style.background=m.color;d.title=`${m.name} ${m.dose} at ${formatTime12(t)}`;pmR.appendChild(d);});
+    pmS.appendChild(pmR);
+    col.appendChild(amS);col.appendChild(hr);col.appendChild(pmS);
     grid.appendChild(col);
   }
 }
@@ -1010,7 +1131,7 @@ function saveAll(){
   speak('You are all set! Your medicine plan has been saved. We will remind you when it is time to take your medicine.');
 }
 function startAgain(){
-  meds.length=0; selReminders.clear(); calOff=0; dayOff=0; planWeekOff=0; colorIdx=0;
+  meds.length=0; selReminders.clear(); calOff=0; dayOff=0; planWeekOff=0; planMonthOff=0; colorIdx=0;
   renderMedList();
   document.getElementById('confirmBox').classList.remove('on');
   document.querySelectorAll('.rcard').forEach(c=>c.classList.remove('on'));
@@ -1026,7 +1147,7 @@ function renderPlanLegend(){
   meds.forEach(m=>{
     const item=document.createElement('div');
     item.className='legend-item';
-    item.innerHTML=`<span class="legend-dot" style="background:${m.color}"></span>${m.name} ${m.dose}`;
+    item.innerHTML=`<span class="legend-dot" style="background:${m.color}"></span><strong>${m.name}</strong> <span class="legend-dose">${m.dose}</span>`;
     el.appendChild(item);
   });
 }
@@ -1034,10 +1155,13 @@ function renderPlanLegend(){
 function setPlanView(v){
   document.getElementById('planDayView').style.display=v==='day'?'block':'none';
   document.getElementById('planWeekView').style.display=v==='week'?'block':'none';
+  document.getElementById('planMonthView').style.display=v==='month'?'block':'none';
   document.getElementById('pDayBtn').classList.toggle('active',v==='day');
   document.getElementById('pWeekBtn').classList.toggle('active',v==='week');
+  document.getElementById('pMonthBtn').classList.toggle('active',v==='month');
   if(v==='day') renderDayView();
-  else renderWeekPlan();
+  else if(v==='week') renderWeekPlan();
+  else renderMonthPlan();
 }
 
 function moveDay(d){dayOff+=d;renderDayView();}
@@ -1086,9 +1210,11 @@ function renderDayView(){
       div.className='day-entry';
       div.style.borderLeftColor=m.color;
       div.style.background=m.color+'44';
-      div.innerHTML=`<div class="day-time">${t}<small>${getPeriod(t.split(':')[0])}</small></div>
-        <div><div class="day-med-name"><span class="day-badge" style="background:${m.color}"></span>${m.name} — ${m.dose}</div>
-        <div class="day-med-detail">${[mealInfo,m.notes].filter(Boolean).join(' · ')}</div></div>`;
+      div.innerHTML=`<div class="day-time">${formatTime12(t)}</div>
+        <div><div class="day-med-name"><span class="day-badge" style="background:${m.color}"></span>${m.name}</div>
+        <div class="day-med-dose">${m.dose}${mealInfo?' · '+mealInfo:''}</div>
+        ${m.notes?`<div class="day-med-detail">${m.notes}</div>`:''}
+        </div>`;
       block.appendChild(div);
     });
     content.appendChild(block);
@@ -1109,7 +1235,8 @@ function renderDayView(){
       div.style.borderLeftColor=m.color;
       div.style.background='#f5f5ff';
       div.innerHTML=`<div class="day-time" style="color:#aaa">—</div>
-        <div><div class="day-med-name"><span class="day-badge" style="background:${m.color}"></span>${m.name} — ${m.dose}</div>
+        <div><div class="day-med-name"><span class="day-badge" style="background:${m.color}"></span>${m.name}</div>
+        <div class="day-med-dose">${m.dose}</div>
         <div class="day-med-detail">Take when needed${m.notes?' · '+m.notes:''}</div></div>`;
       block.appendChild(div);
     });
@@ -1144,14 +1271,26 @@ function renderWeekPlan(){
       m.times.forEach(t=>entries.push({t,m}));
     });
     entries.sort((a,b)=>a.t.localeCompare(b.t));
-    entries.forEach(({t,m})=>{
-      const chip=document.createElement('div');
-      chip.className='wchip';
-      chip.style.background=m.color;
-      chip.title=`${m.name} ${m.dose} at ${t}`;
-      chip.textContent=`${t} ${m.name}`;
-      col.appendChild(chip);
-    });
+    const amE=entries.filter(({t})=>parseInt(t.split(':')[0])<12);
+    const pmE=entries.filter(({t})=>parseInt(t.split(':')[0])>=12);
+
+    const amSec=document.createElement('div');
+    amSec.className='wdot-section';
+    amSec.innerHTML='<div class="wdot-section-lbl">AM</div>';
+    const amRow=document.createElement('div');amRow.className='wdot-row';
+    amE.forEach(({t,m})=>{const d=document.createElement('span');d.className='wdot';d.style.background=m.color;d.title=`${m.name} ${m.dose} at ${formatTime12(t)}`;amRow.appendChild(d);});
+    amSec.appendChild(amRow);
+
+    const div2=document.createElement('hr');div2.className='wdot-divider';
+
+    const pmSec=document.createElement('div');
+    pmSec.className='wdot-section';
+    pmSec.innerHTML='<div class="wdot-section-lbl">PM</div>';
+    const pmRow=document.createElement('div');pmRow.className='wdot-row';
+    pmE.forEach(({t,m})=>{const d=document.createElement('span');d.className='wdot';d.style.background=m.color;d.title=`${m.name} ${m.dose} at ${formatTime12(t)}`;pmRow.appendChild(d);});
+    pmSec.appendChild(pmRow);
+
+    col.appendChild(amSec);col.appendChild(div2);col.appendChild(pmSec);
     grid.appendChild(col);
   }
   const asDiv=document.getElementById('asneededWeek');
@@ -1163,6 +1302,52 @@ function renderWeekPlan(){
       div.className='asneeded-row';
       div.style.borderLeftColor=m.color;
       div.innerHTML=`<span class="day-badge" style="background:${m.color}"></span><strong>${m.name}</strong> — ${m.dose}${m.notes?' · '+m.notes:''}`;
+      asDiv.appendChild(div);
+    });
+  }
+}
+
+function movePlanMonth(d){planMonthOff+=d;renderMonthPlan();}
+
+function renderMonthPlan(){
+  const today=new Date();
+  const ref=new Date(today.getFullYear(),today.getMonth()+planMonthOff,1);
+  const MNAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const DNAMES=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  document.getElementById('monthPlanLabel').textContent=`${MNAMES[ref.getMonth()]} ${ref.getFullYear()}`;
+  const grid=document.getElementById('monthPlanGrid');
+  grid.innerHTML='';
+  // Day headers
+  DNAMES.forEach(d=>{const h=document.createElement('div');h.className='month-day-hdr';h.textContent=d;grid.appendChild(h);});
+  // Start offset: Mon=0
+  const firstDow=(new Date(ref.getFullYear(),ref.getMonth(),1).getDay()+6)%7;
+  const lastDate=new Date(ref.getFullYear(),ref.getMonth()+1,0).getDate();
+  const totalCells=Math.ceil((firstDow+lastDate)/7)*7;
+  for(let i=0;i<totalCells;i++){
+    const dayNum=i-firstDow+1;
+    const date=new Date(ref.getFullYear(),ref.getMonth(),dayNum);
+    const isCurMonth=date.getMonth()===ref.getMonth();
+    const isToday=date.toDateString()===today.toDateString();
+    const cell=document.createElement('div');
+    cell.className='month-day'+(isToday?' today':'')+(isCurMonth?'':' other-month');
+    const num=document.createElement('div');num.className='month-day-num';num.textContent=date.getDate();cell.appendChild(num);
+    const dots=document.createElement('div');dots.className='month-dots';
+    const dow=date.getDay();
+    meds.forEach(m=>{
+      if(m.freq==='asneeded') return;
+      if(m.freq==='weekly'&&dow!==1) return;
+      const dot=document.createElement('span');dot.className='month-dot';dot.style.background=m.color;dot.title=`${m.name} ${m.dose}`;dots.appendChild(dot);
+    });
+    cell.appendChild(dots);grid.appendChild(cell);
+  }
+  // As-needed list
+  const asDiv=document.getElementById('asneededMonth');asDiv.innerHTML='';
+  const asn=meds.filter(m=>m.freq==='asneeded');
+  if(asn.length){
+    asDiv.innerHTML='<h4 style="font-size:.84rem;color:var(--m);margin-bottom:.38rem">🤷 As needed (any day):</h4>';
+    asn.forEach(m=>{
+      const div=document.createElement('div');div.className='asneeded-row';div.style.borderLeftColor=m.color;
+      div.innerHTML=`<span class="day-badge" style="background:${m.color}"></span><strong>${m.name}</strong> <span style="color:var(--b);font-weight:700">${m.dose}</span>${m.notes?' · '+m.notes:''}`;
       asDiv.appendChild(div);
     });
   }
@@ -1190,6 +1375,15 @@ const mealKw={
   any:["doesn't matter","any time","anytime","no preference","no","doesn't","it doesn't"]
 };
 function parseFreq(t){t=t.toLowerCase();for(const[k,ws]of Object.entries(freqKw))for(const w of ws)if(t.includes(w))return k;return null;}
+function parseDuration(t){
+  t=t.toLowerCase();
+  if(/ongoing|indefinite|forever|no end|always|long.?term/.test(t)) return 'ongoing';
+  const wk=t.match(/(\d+)\s*week/);if(wk) return String(parseInt(wk[1])*7);
+  const mn=t.match(/(\d+)\s*month/);if(mn) return String(parseInt(mn[1])*30);
+  const dy=t.match(/(\d+)\s*day/);if(dy) return dy[1];
+  const num=t.match(/^\s*(\d+)\s*$/);if(num) return num[1];
+  return null;
+}
 function parseMeal(t){t=t.toLowerCase();for(const[k,ws]of Object.entries(mealKw))for(const w of ws)if(t.includes(w))return k;return null;}
 function parseDose(t){const m=t.match(/(\d+\.?\d*\s*(?:mg|ml|g|mcg|iu|units?))/i);return m?m[1].replace(/\s+/,'').toLowerCase():null;}
 function parseName(t){
@@ -1299,6 +1493,12 @@ async function processChatInput(text){
 
   if(chatState==='NOTES'){
     chatMed.notes=(t==='no'||t==='none'||t==='skip'||t==='nothing')?'':text;
+    await botSay('How many days will you take this medicine? For example: "7 days", "30 days", or say "ongoing" if there is no end date.');
+    chatState='DURATION';return;
+  }
+
+  if(chatState==='DURATION'){
+    chatMed.duration=parseDuration(t)||'ongoing';
     await showConfirm();return;
   }
 
@@ -1342,9 +1542,10 @@ async function nextQuestion(){
 
 async function showConfirm(){
   const m=chatMed;
-  const ml=m.meals&&m.meals.length?`Take ${m.meals[0]} meal. `:'';
-  const nt=m.notes?`Notes: ${m.notes}.`:'';
-  await botSay(`Here is what I have:\n💊 ${m.name} — ${m.dose}\n🕐 ${freqLbl(m.freq)}\n${ml}${nt}\nIs that right? Say yes to add it, or no to start again.`);
+  const ml=m.meals&&m.meals.length?`🍽️ Take ${m.meals[0]} meal\n`:'';
+  const nt=m.notes?`📝 ${m.notes}\n`:'';
+  const dur=m.duration&&m.duration!=='ongoing'?`📅 ${m.duration} days`:'📅 Ongoing';
+  await botSay(`Here is what I have:\n💊 ${m.name}\n💉 ${m.dose}\n🕐 ${freqLbl(m.freq)}\n${ml}${nt}${dur}\n\nIs that right? Say yes to add it, or no to start again.`);
   chatState='CONFIRM';
 }
 
